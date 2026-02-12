@@ -1,0 +1,11 @@
+{
+  "name": "wcag-21-aa-simulation",
+  "version": "1.0.0",
+  "description": "WCAG 2.1 AA best practices simulation — SaaS Data Catalog",
+  "scripts": {
+    "dev": "npx live-server --port=3000 --open=index.html",
+    "start": "npx http-server -p 3000 -o index.html"
+  },
+  "keywords": ["wcag", "accessibility", "a11y", "simulation"],
+  "license": "MIT"
+}
