@@ -1,0 +1,3355 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WCAG Demo — Data Catalog | WCAG 2.1 AA Simulation</title>
+  <meta name="description" content="A WCAG 2.1 AA compliant SaaS data catalog simulation demonstrating accessibility best practices.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       CSS CUSTOM PROPERTIES
+       ======================================== */
+    :root {
+      --color-bg: #F4F5F7;
+      --color-surface: #FFFFFF;
+      --color-surface-raised: #FFFFFF;
+      --color-surface-hover: #F0F1F4;
+      --color-border: #DFE1E6;
+      --color-border-focus: #3B5BB8; /* Updated to match new accent color */
+      --color-text-primary: #1A1D2B;
+      --color-text-secondary: #5E6278;
+      --color-text-muted: #6B7488; /* Changed from #8993A4 to meet WCAG AA 4.5:1 contrast */
+      --color-accent: #3B5BB8; /* Darkened from #4C6FD1 for WCAG AA 4.5:1 contrast */
+      --color-accent-hover: #2D4A9F;
+      --color-accent-subtle: rgba(59,91,184,0.09);
+      --color-success: #107C57; /* Darkened from #1B9E6D for WCAG AA 4.5:1 contrast */
+      --color-success-subtle: rgba(16,124,87,0.09);
+      --color-warning: #8A6100; /* Darkened from #C08C17 for WCAG AA 4.5:1 contrast */
+      --color-warning-subtle: rgba(138,97,0,0.09);
+      --color-danger: #C1313F; /* Darkened from #D94452 for WCAG AA 4.5:1 contrast */
+      --color-danger-subtle: rgba(193,49,63,0.09);
+      --color-danger-hover: #A72838;
+      --font-body: 'Roboto', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-md: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+      --focus-ring: 0 0 0 3px rgba(76,111,209,0.4);
+      --transition-fast: 150ms ease;
+      --transition-med: 250ms ease;
+      --nav-width: 240px;
+      --header-height: 56px;
+      --drawer-width: 420px;
+    }
+
+    /* ========================================
+       RESET & BASE
+       ======================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--color-text-primary);
+      background: var(--color-bg);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ========================================
+       SKIP LINKS — WCAG 2.4.1 Bypass Blocks
+       ======================================== */
+    .skip-links {
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      padding: 10px 20px;
+      background: var(--color-accent);
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+      white-space: nowrap;
+      z-index: 10001;
+    }
+    .skip-link:focus {
+      left: 0;
+      outline: 3px solid #fff;
+      outline-offset: 2px;
+    }
+
+    /* ========================================
+       FOCUS STYLES — WCAG 2.4.7 Focus Visible
+       ======================================== */
+    :focus { outline: none; }
+    :focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+    /* For elements that need inset focus */
+    .focus-inset:focus-visible {
+      outline-offset: -3px;
+    }
+
+    /* ========================================
+       SCREEN READER ONLY UTILITY
+       ======================================== */
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ========================================
+       LAYOUT
+       ======================================== */
+    .app-layout {
+      display: grid;
+      grid-template-columns: var(--nav-width) 1fr;
+      grid-template-rows: var(--header-height) 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ========================================
+       TOP HEADER — landmark: banner
+       ======================================== */
+    .app-header {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      z-index: 100;
+    }
+    .app-header__brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .app-header__logo {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--color-accent), #7C5CBF);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .app-header__logo svg { width: 16px; height: 16px; }
+    .app-header__title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--color-text-primary);
+    }
+    .app-header__actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ========================================
+       HEADER SEARCH
+       ======================================== */
+    .header-search {
+      position: relative;
+      width: 280px;
+    }
+    .header-search__input {
+      width: 100%;
+      padding: 7px 12px 7px 36px;
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-primary);
+      font-family: var(--font-body);
+      font-size: 13px;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .header-search__input::placeholder { color: var(--color-text-muted); }
+    .header-search__input:focus-visible {
+      outline: none;
+      border-color: var(--color-border-focus);
+      box-shadow: var(--focus-ring);
+    }
+    .header-search__icon {
+      position: absolute;
+      left: 10px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+      pointer-events: none;
+    }
+    .header-search__kbd {
+      position: absolute;
+      right: 8px; top: 50%;
+      transform: translateY(-50%);
+      padding: 1px 6px;
+      background: var(--color-surface-hover);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    /* ========================================
+       NOTIFICATION BUTTON (HEADER)
+       ======================================== */
+    .notif-btn { position: relative; }
+    .notif-btn__badge {
+      position: absolute;
+      top: 2px; right: 2px;
+      width: 8px; height: 8px;
+      background: var(--color-danger);
+      border-radius: 50%;
+      border: 2px solid var(--color-surface);
+    }
+
+    /* ========================================
+       AVATAR MENU
+       ======================================== */
+    .avatar-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4C6FD1, #7C5CBF);
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-weight: 600;
+      font-size: 13px;
+      font-family: var(--font-body);
+    }
+    .avatar-btn:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+
+    /* ========================================
+       LEFT NAVIGATION — landmark: navigation
+       ======================================== */
+    .app-nav {
+      grid-column: 1;
+      grid-row: 2;
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      padding: 16px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-section-label {
+      padding: 16px 12px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-muted);
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: background var(--transition-fast), color var(--transition-fast);
+      border: none;
+      background: none;
+      width: 100%;
+      cursor: pointer;
+      font-family: var(--font-body);
+      text-align: left;
+    }
+    .nav-item:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+    .nav-item:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: -1px;
+    }
+    .nav-item[aria-current="page"] {
+      background: var(--color-accent-subtle);
+      color: var(--color-accent);
+    }
+    .nav-item__icon { width: 18px; height: 18px; flex-shrink: 0; }
+    .nav-item__badge {
+      margin-left: auto;
+      padding: 1px 8px;
+      background: var(--color-accent-subtle);
+      color: var(--color-accent);
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .nav-spacer { flex: 1; }
+
+    /* ========================================
+       MAIN CONTENT — landmark: main
+       ======================================== */
+    .app-main {
+      grid-column: 2;
+      grid-row: 2;
+      padding: 28px 32px 40px;
+      overflow-y: auto;
+      overflow-y: auto;
+      background: var(--color-bg);
+    }
+    .main-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .main-header__title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--color-text-primary);
+      line-height: 1.2;
+    }
+    .main-header__subtitle {
+      margin-top: 4px;
+      font-size: 14px;
+      color: var(--color-text-secondary);
+    }
+    .main-header__actions { display: flex; gap: 8px; }
+
+    /* ========================================
+       BUTTONS
+       ======================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .btn:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .btn--primary {
+      background: var(--color-accent);
+      color: #fff;
+      border-color: var(--color-accent);
+    }
+    .btn--primary:hover { background: var(--color-accent-hover); }
+    .btn--secondary {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border-color: var(--color-border);
+    }
+    .btn--secondary:hover { border-color: var(--color-text-muted); color: var(--color-text-primary); }
+    .btn--ghost {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border: none;
+      padding: 6px 10px;
+    }
+    .btn--ghost:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+    .btn--danger {
+      background: transparent;
+      color: var(--color-danger);
+      border-color: var(--color-danger);
+    }
+    .btn--danger:hover { background: var(--color-danger-subtle); }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* ========================================
+       ICON BUTTON
+       4.1.2: aria-label identifies purpose
+       ======================================== */
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: background var(--transition-fast), color var(--transition-fast);
+      position: relative;
+    }
+    .icon-btn:hover {
+      background: var(--color-surface-hover);
+      color: var(--color-text-primary);
+    }
+    .icon-btn:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .icon-btn svg { width: 16px; height: 16px; }
+
+    /* Disabled icon buttons — WCAG best practice:
+       aria-disabled="true" + title explaining why */
+    .icon-btn[aria-disabled="true"] {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* ========================================
+       TOOLTIPS — 1.3.1, 4.1.2
+       role="tooltip", aria-describedby
+       ======================================== */
+    .has-tooltip { position: relative; }
+    .tooltip {
+      position: absolute;
+      padding: 6px 12px;
+      background: #1A1D2B;
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      z-index: 1000;
+    }
+
+    /* Tooltip positions — each variant must fully define top/bottom/left/right/transform
+       to avoid conflicts when switching dynamically via JS */
+    .tooltip,
+    .tooltip--top {
+      bottom: calc(100% + 8px);
+      top: auto;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+    }
+    .tooltip::after,
+    .tooltip--top::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      bottom: auto;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #1A1D2B;
+    }
+
+    .tooltip--bottom {
+      top: calc(100% + 8px);
+      bottom: auto;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+    }
+    .tooltip--bottom::after {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      top: auto;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-bottom-color: #1A1D2B;
+    }
+
+    .tooltip--left {
+      right: calc(100% + 8px);
+      left: auto;
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%);
+    }
+    .tooltip--left::after {
+      content: '';
+      position: absolute;
+      left: 100%;
+      right: auto;
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%);
+      border: 5px solid transparent;
+      border-left-color: #1A1D2B;
+    }
+
+    .tooltip--right {
+      left: calc(100% + 8px);
+      right: auto;
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%);
+    }
+    .tooltip--right::after {
+      content: '';
+      position: absolute;
+      right: 100%;
+      left: auto;
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%);
+      border: 5px solid transparent;
+      border-right-color: #1A1D2B;
+    }
+
+    .has-tooltip:hover .tooltip,
+    .has-tooltip:focus-within .tooltip {
+      opacity: 1;
+    }
+    /* Hide tooltip when dropdown is open */
+    .has-tooltip [aria-expanded="true"] ~ .tooltip {
+      opacity: 0 !important;
+    }
+
+    /* ========================================
+       METRIC CARDS
+       ======================================== */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .metric-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .metric-card__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .metric-card__label {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+    .metric-card__value {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--color-text-primary);
+    }
+    .metric-card__change {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .metric-card__change--up { color: var(--color-success); }
+    .metric-card__change--down { color: var(--color-danger); }
+    .metric-card__chart {
+      margin-top: 12px;
+      height: 40px;
+    }
+    .metric-card__chart svg { width: 100%; height: 100%; }
+
+    /* ========================================
+       SECTION HEADINGS
+       ======================================== */
+    .section {
+      margin-bottom: 32px;
+    }
+    .section__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section__title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--color-text-primary);
+    }
+
+    /* ========================================
+       WIDGET CARD
+       ======================================== */
+    .widget {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .widget__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .widget__title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ========================================
+       DATA TABLE / LIST
+       ======================================== */
+    .data-list {
+      list-style: none;
+    }
+    .data-list__item {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--color-border);
+      transition: background var(--transition-fast);
+      cursor: pointer;
+    }
+    .data-list__item:last-child {
+      border-bottom: none;
+      border-radius: 0 0 calc(var(--radius-md) - 1px) calc(var(--radius-md) - 1px);
+    }
+    .data-list__item:hover { background: var(--color-surface-hover); }
+    .data-list__item:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: -3px;
+      border-radius: 0;
+    }
+    .data-list__icon {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-right: 14px;
+    }
+    .data-list__icon--table { background: var(--color-accent-subtle); color: var(--color-accent); }
+    .data-list__icon--view { background: var(--color-success-subtle); color: var(--color-success); }
+    .data-list__icon--pipeline { background: var(--color-warning-subtle); color: var(--color-warning); }
+    .data-list__icon svg { width: 16px; height: 16px; }
+    .data-list__info { flex: 1; min-width: 0; }
+    .data-list__name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      display: block;
+    }
+    .data-list__meta {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 1px;
+    }
+    .data-list__tags {
+      display: flex;
+      gap: 6px;
+      margin-right: 16px;
+    }
+    .tag {
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .tag--quality { background: var(--color-success-subtle); color: var(--color-success); }
+    .tag--pii { background: var(--color-danger-subtle); color: var(--color-danger); }
+    .tag--source { background: var(--color-accent-subtle); color: var(--color-accent); }
+    .data-list__actions {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    /* ========================================
+       TWO-COLUMN GRID
+       ======================================== */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* ========================================
+       CHART PLACEHOLDER (accessible)
+       ======================================== */
+    .chart-area {
+      padding: 20px;
+    }
+    .chart-bar-group {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      height: 150px;
+      padding-bottom: 28px;
+    }
+    .chart-bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      height: 100%;
+      justify-content: flex-end;
+      position: relative;
+    }
+    .chart-bar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      transition: opacity var(--transition-fast);
+      min-height: 2px;
+    }
+    .chart-bar--danger { border-radius: 0 0 4px 4px; }
+    .chart-bar:hover { opacity: 0.8; }
+    .chart-bar__label {
+      position: absolute;
+      bottom: -24px;
+      left: 50%; transform: translateX(-50%);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 32px;
+      padding-top: 12px;
+      border-top: 1px solid var(--color-border);
+    }
+    .chart-legend__item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+    .chart-legend__dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ========================================
+       DROPDOWN MENU — 4.1.2 Name, Role, Value
+       role="menu", role="menuitem"
+       ======================================== */
+    .dropdown { position: relative; }
+    .dropdown__menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      min-width: 180px;
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 6px;
+      z-index: 500;
+      display: none;
+    }
+    .dropdown__menu[aria-hidden="false"] { display: block; }
+    .dropdown__item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: none;
+      background: none;
+      color: var(--color-text-secondary);
+      font-family: var(--font-body);
+      font-size: 13px;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+    .dropdown__item:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+    .dropdown__item:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: -1px;
+    }
+    .dropdown__item svg { width: 15px; height: 15px; }
+    .dropdown__sep {
+      height: 1px;
+      background: var(--color-border);
+      margin: 4px 8px;
+    }
+    .dropdown__item--danger { color: var(--color-danger); }
+    .dropdown__item--danger:hover { background: var(--color-danger-subtle); }
+
+    /* Dropdown menu variations */
+    .dropdown__menu--right { right: 0; left: auto; }
+    .dropdown__menu--notifications {
+      min-width: 320px;
+      max-width: 380px;
+      right: 0;
+      left: auto;
+    }
+    .dropdown__menu--filter {
+      min-width: 220px;
+      right: 0;
+      left: auto;
+    }
+    .dropdown__header {
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      border-bottom: 1px solid var(--color-border);
+      margin: -6px -6px 6px -6px;
+    }
+    .dropdown__item--notification {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 12px;
+      gap: 4px;
+    }
+    .notification__content {
+      width: 100%;
+    }
+    .notification__content strong {
+      display: block;
+      color: var(--color-text-primary);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .notification__content p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      line-height: 1.4;
+    }
+    .notification__time {
+      display: block;
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: 6px;
+    }
+
+    /* ========================================
+       MODAL / DIALOG — focus trap
+       aria-modal, role="dialog", aria-labelledby
+       ======================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 200ms ease;
+    }
+    .modal-overlay[aria-hidden="false"] { display: flex; }
+    .modal {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 480px;
+      max-width: 90vw;
+      max-height: 85vh;
+      overflow: auto;
+      animation: slideUp 250ms ease;
+    }
+    .modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .modal__title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+    .modal__body { padding: 24px; }
+    .modal__footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 24px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    /* ========================================
+       FORM CONTROLS — 4.1.2, 1.3.1
+       ======================================== */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-bottom: 6px;
+    }
+    .form-label__required {
+      color: var(--color-danger);
+      margin-left: 2px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 9px 14px;
+      background: #F7F8FA;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .form-input:focus-visible {
+      outline: none;
+      border-color: var(--color-border-focus);
+      box-shadow: var(--focus-ring);
+    }
+    .form-input::placeholder { color: var(--color-text-muted); }
+    .form-hint {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .form-select {
+      width: 100%;
+      padding: 9px 14px;
+      background: #F7F8FA;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7194' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+    .form-select:focus-visible {
+      outline: none;
+      border-color: var(--color-border-focus);
+      box-shadow: var(--focus-ring);
+    }
+
+    /* Form validation error states */
+    .form-input--error,
+    .form-select--error {
+      border-color: var(--color-danger);
+      background: #FEF5F5;
+    }
+    .form-input--error:focus-visible,
+    .form-select--error:focus-visible {
+      border-color: var(--color-danger);
+      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+    }
+    .form-error {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--color-danger);
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+    }
+    .form-error svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ========================================
+       DRAWER — right side, focus trap
+       ======================================== */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+    .drawer-overlay[aria-hidden="false"] { display: block; }
+    .drawer-overlay--visible { opacity: 1; }
+    .drawer {
+      position: fixed;
+      top: 0; right: 0;
+      width: var(--drawer-width);
+      max-width: 95vw;
+      height: 100vh;
+      background: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      box-shadow: var(--shadow-lg);
+      z-index: 1001;
+      display: none;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 300ms ease;
+    }
+    .drawer--visible {
+      display: flex;
+      transform: translateX(0);
+    }
+    .drawer__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+    .drawer__title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+    .drawer__subtitle {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    /* Drawer Tabs — WCAG role="tablist" */
+    .drawer__tabs {
+      display: flex;
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 24px;
+      flex-shrink: 0;
+    }
+    .drawer__tab {
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      color: var(--color-text-muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color var(--transition-fast), border-color var(--transition-fast);
+    }
+    .drawer__tab:hover { color: var(--color-text-primary); }
+    .drawer__tab:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: -3px;
+    }
+    .drawer__tab[aria-selected="true"] {
+      color: var(--color-accent);
+      border-bottom-color: var(--color-accent);
+    }
+    .drawer__tab-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: none;
+    }
+    .drawer__tab-panel[aria-hidden="false"] { display: block; }
+
+    /* Drawer content styles */
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-row__label {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+    .detail-row__value {
+      font-size: 13px;
+      color: var(--color-text-primary);
+      font-weight: 500;
+      text-align: right;
+    }
+    .person-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .person-row:last-child { border-bottom: none; }
+    .person-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .person-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .person-role {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    /* ========================================
+       LIVE REGION — screen reader announcements
+       ======================================== */
+    .live-region {
+      position: absolute;
+      left: -9999px;
+      width: 1px; height: 1px;
+    }
+
+    /* ========================================
+       ANIMATIONS
+       ======================================== */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========================================
+       WCAG BADGE (info panel)
+       ======================================== */
+    .wcag-badge {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 9999;
+    }
+    .wcag-badge__trigger {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-secondary);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+    }
+    .wcag-badge__trigger:hover { background: var(--color-surface-hover); border-color: var(--color-text-muted); }
+    .wcag-badge__trigger:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .wcag-badge__dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--color-success);
+    }
+    .wcag-panel {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 380px;
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 20px;
+      display: none;
+    }
+    .wcag-panel[aria-hidden="false"] { display: block; }
+    .wcag-panel h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--color-text-primary);
+    }
+    .wcag-panel__item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 12px;
+      color: var(--color-text-primary);
+      line-height: 1.5;
+    }
+    .wcag-panel__check {
+      color: var(--color-success);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .wcag-panel__tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 1px 5px;
+      background: var(--color-accent-subtle);
+      color: var(--color-accent);
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    /* ========================================
+       KEYBOARD SHORTCUTS HELP BAR
+       ======================================== */
+    .kbd-help-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+      padding: 10px 24px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      z-index: 9998;
+      animation: fadeIn 150ms ease;
+    }
+    .kbd-help-bar[aria-hidden="false"] { display: flex; }
+    .kbd-help-bar__item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+    .kbd-help-bar__key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      padding: 2px 6px;
+      background: var(--color-surface-hover);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .kbd-help-bar__close {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* ========================================
+       WALKTHROUGH OVERLAY
+       ======================================== */
+    .wt-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      display: none;
+    }
+    .wt-overlay[aria-hidden="false"] { display: block; }
+
+    .wt-spotlight {
+      position: absolute;
+      border-radius: var(--radius-md);
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.55);
+      transition: top 350ms ease, left 350ms ease, width 350ms ease, height 350ms ease;
+      z-index: 3001;
+      pointer-events: none;
+    }
+    .wt-spotlight::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border: 2.5px solid var(--color-accent);
+      border-radius: calc(var(--radius-md) + 2px);
+      animation: wtPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes wtPulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .wt-card {
+      position: fixed;
+      z-index: 3002;
+      width: 420px;
+      max-width: calc(100vw - 32px);
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      animation: fadeIn 200ms ease;
+      overflow: hidden;
+    }
+
+    .wt-card__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 16px 0;
+    }
+    .wt-card__step {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-accent);
+      background: var(--color-accent-subtle);
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+    .wt-card__tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 1px 5px;
+      background: var(--color-accent-subtle);
+      color: var(--color-accent);
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .wt-card__close {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .wt-card__close:hover { background: var(--color-surface-hover); }
+    .wt-card__close:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+
+    .wt-card__body {
+      padding: 12px 16px;
+    }
+    .wt-card__title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin-bottom: 6px;
+    }
+    .wt-card__desc {
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--color-text-primary);
+      margin-bottom: 8px;
+    }
+    .wt-card__impact {
+      font-size: 12px;
+      font-style: italic;
+      color: var(--color-text-secondary);
+      margin-bottom: 10px;
+      padding-left: 10px;
+      border-left: 2px solid var(--color-warning);
+    }
+
+    .wt-card__sr {
+      background: #1A1D2B;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      margin-bottom: 4px;
+      overflow-x: auto;
+    }
+    .wt-card__sr-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: #6B7488;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .wt-card__sr pre {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: #D4E0FF;
+      white-space: pre;
+      margin: 0;
+    }
+
+    .wt-card__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 14px;
+    }
+    .wt-card__nav {
+      display: flex;
+      gap: 6px;
+    }
+    .wt-card__btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font-body);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+    .wt-card__btn:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .wt-card__btn--secondary {
+      background: var(--color-surface-hover);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+    }
+    .wt-card__btn--secondary:hover { background: var(--color-border); }
+    .wt-card__btn--primary {
+      background: var(--color-accent);
+      border: 1px solid var(--color-accent);
+      color: #fff;
+    }
+    .wt-card__btn--primary:hover { background: var(--color-accent-hover); }
+
+    .wt-card__progress {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .wt-card__dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-border);
+      transition: background var(--transition-fast);
+    }
+    .wt-card__dot--active {
+      background: var(--color-accent);
+      width: 8px;
+      height: 8px;
+    }
+
+    .wt-tour-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: var(--color-accent);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+    .wt-tour-btn:hover { background: var(--color-accent-hover); }
+    .wt-tour-btn:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+
+    /* Step 1: make skip link visible during walkthrough */
+    .skip-link--visible {
+      position: static !important;
+      left: auto !important;
+      display: inline-block;
+      margin: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .wt-card {
+        width: calc(100vw - 16px);
+        left: 8px !important;
+        right: 8px !important;
+      }
+    }
+
+    /* Landmark focus highlight pulse */
+    .landmark-focus-ring {
+      animation: landmarkPulse 600ms ease;
+    }
+    @keyframes landmarkPulse {
+      0% { box-shadow: 0 0 0 0 rgba(76,111,209,0.4); }
+      50% { box-shadow: 0 0 0 4px rgba(76,111,209,0.2); }
+      100% { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================
+       SKIP LINKS — WCAG 2.4.1 Bypass Blocks
+       Allows keyboard users to skip repetitive
+       navigation and jump directly to content.
+       ========================================== -->
+  <nav class="skip-links" aria-label="Skip links">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#main-nav" class="skip-link">Skip to navigation</a>
+    <a href="#search-input" class="skip-link">Skip to search</a>
+    <a href="#catalog-section" class="skip-link">Skip to data catalog</a>
+    <a href="#pipeline-section" class="skip-link">Skip to pipelines</a>
+  </nav>
+
+  <!-- Live region for screen reader announcements -->
+  <div id="live-region" class="live-region" aria-live="polite" aria-atomic="true" role="status"></div>
+
+  <!-- ==========================================
+       APP LAYOUT
+       ========================================== -->
+  <div class="app-layout">
+
+    <!-- ==========================================
+         TOP HEADER — landmark: banner
+         ========================================== -->
+    <header class="app-header" role="banner">
+      <div class="app-header__brand">
+        <div class="app-header__logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white  " stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="app-header__title">WCAG Demo</span>
+      </div>
+
+      <div class="header-search" role="search" aria-label="Global search">
+        <svg class="header-search__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <label for="search-input" class="sr-only">Search data assets, tables, or pipelines</label>
+        <input type="search" id="search-input" class="header-search__input" placeholder="Search assets, tables…" autocomplete="off">
+        <kbd class="header-search__kbd" aria-hidden="true">⌘K</kbd>
+      </div>
+
+      <div class="app-header__actions">
+        <!-- Notifications Dropdown -->
+        <div class="dropdown has-tooltip">
+          <button class="icon-btn notif-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications — 3 unread" aria-describedby="tt-notif" id="notif-menu-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <span class="notif-btn__badge" aria-hidden="true"></span>
+          </button>
+          <span class="tooltip" role="tooltip" id="tt-notif">Notifications</span>
+          <div class="dropdown__menu dropdown__menu--notifications" role="menu" aria-labelledby="notif-menu-btn" aria-hidden="true" id="notif-dropdown">
+            <div class="dropdown__header">Notifications</div>
+            <button class="dropdown__item dropdown__item--notification" role="menuitem" tabindex="-1">
+              <div class="notification__content">
+                <strong>Pipeline Failed</strong>
+                <p>ETL — Customers pipeline failed at step 3</p>
+                <span class="notification__time">5 minutes ago</span>
+              </div>
+            </button>
+            <button class="dropdown__item dropdown__item--notification" role="menuitem" tabindex="-1">
+              <div class="notification__content">
+                <strong>Data Quality Alert</strong>
+                <p>customers_dim has 12 validation errors</p>
+                <span class="notification__time">1 hour ago</span>
+              </div>
+            </button>
+            <button class="dropdown__item dropdown__item--notification" role="menuitem" tabindex="-1">
+              <div class="notification__content">
+                <strong>Access Request</strong>
+                <p>Sarah Kim requested access to orders_fact</p>
+                <span class="notification__time">2 hours ago</span>
+              </div>
+            </button>
+            <div class="dropdown__sep" role="separator"></div>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">View all notifications</button>
+          </div>
+        </div>
+
+        <!-- Help Dropdown -->
+        <div class="dropdown has-tooltip">
+          <button class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Help and documentation" aria-describedby="tt-help" id="help-menu-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </button>
+          <span class="tooltip" role="tooltip" id="tt-help">Help</span>
+          <div class="dropdown__menu" role="menu" aria-labelledby="help-menu-btn" aria-hidden="true" id="help-dropdown">
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Documentation
+            </button>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Support Portal
+            </button>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="22 7 12 13 2 7"/></svg>
+              Contact Support
+            </button>
+            <div class="dropdown__sep" role="separator"></div>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              What's New
+            </button>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Keyboard Shortcuts
+            </button>
+          </div>
+        </div>
+
+        <!-- User Menu Dropdown -->
+        <div class="dropdown">
+          <button class="avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="User menu — Vincent Olivari" id="user-menu-btn" type="button">VO</button>
+          <div class="dropdown__menu dropdown__menu--right" role="menu" aria-labelledby="user-menu-btn" aria-hidden="true" id="user-dropdown">
+            <div class="dropdown__header">
+              <strong>Vincent Olivari</strong>
+              <p style="font-size: 12px; color: var(--color-text-muted); margin: 2px 0 0;">vincent@wcag.demo</p>
+            </div>
+            <div class="dropdown__sep" role="separator"></div>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              My Profile
+            </button>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m6-12l-4.24 4.24m-3.52 3.52L6 19m13-7h-6m-6 0H1m12-6l4.24 4.24m-3.52 3.52L19 6"/></svg>
+              Settings
+            </button>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              Privacy
+            </button>
+            <div class="dropdown__sep" role="separator"></div>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         LEFT NAVIGATION — landmark: navigation
+         WCAG 1.3.1, 4.1.2: role, aria-current
+         ========================================== -->
+    <nav class="app-nav" id="main-nav" aria-label="Main navigation">
+      <span class="nav-section-label" id="nav-label-main">Platform</span>
+      <a href="#" class="nav-item" aria-current="page">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview
+      </a>
+      <a href="#catalog-section" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        Data Catalog
+        <span class="nav-item__badge">24</span>
+      </a>
+      <a href="#pipeline-section" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Pipelines
+      </a>
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Governance
+      </a>
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Discussions
+      </a>
+
+      <span class="nav-section-label" id="nav-label-admin">Administration</span>
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Users &amp; Teams
+      </a>
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
+      </a>
+
+      <div class="nav-spacer"></div>
+
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        What's new
+      </a>
+    </nav>
+
+    <!-- ==========================================
+         MAIN CONTENT — landmark: main
+         ========================================== -->
+    <main class="app-main" id="main-content" aria-label="Main content">
+      <div class="main-header">
+        <div>
+          <h1 class="main-header__title">Platform Overview</h1>
+          <p class="main-header__subtitle">Monitor your data assets, quality, and pipeline health.</p>
+        </div>
+        <div class="main-header__actions">
+          <button class="btn btn--secondary" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <button class="btn btn--primary" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Asset
+          </button>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           METRICS — aria-label for each card
+           ========================================== -->
+      <section class="metrics-grid" aria-label="Key metrics">
+        <article class="metric-card" aria-label="Total data assets: 1,247">
+          <div class="metric-card__header">
+            <span class="metric-card__label">Total Assets</span>
+            <div class="has-tooltip">
+              <button class="icon-btn" aria-label="About total assets metric" aria-describedby="tt-assets" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </button>
+              <span class="tooltip" role="tooltip" id="tt-assets">Count of all registered tables, views, and datasets</span>
+            </div>
+          </div>
+          <div class="metric-card__value">1,247</div>
+          <div class="metric-card__change metric-card__change--up" aria-label="Up 12% from last month">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+            +12%
+          </div>
+          <div class="metric-card__chart" aria-hidden="true">
+            <svg viewBox="0 0 200 40"><polyline points="0,35 25,30 50,28 75,25 100,20 125,22 150,15 175,12 200,8" fill="none" stroke="var(--color-accent)" stroke-width="2"/></svg>
+          </div>
+        </article>
+
+        <article class="metric-card" aria-label="Data quality score: 94.2%">
+          <div class="metric-card__header">
+            <span class="metric-card__label">Quality Score</span>
+            <div class="has-tooltip">
+              <button class="icon-btn" aria-label="About quality score metric" aria-describedby="tt-quality" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </button>
+              <span class="tooltip" role="tooltip" id="tt-quality">Average data quality score across all monitored assets</span>
+            </div>
+          </div>
+          <div class="metric-card__value">94.2%</div>
+          <div class="metric-card__change metric-card__change--up" aria-label="Up 3.1% from last month">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+            +3.1%
+          </div>
+          <div class="metric-card__chart" aria-hidden="true">
+            <svg viewBox="0 0 200 40"><polyline points="0,30 25,28 50,22 75,24 100,18 125,16 150,14 175,10 200,6" fill="none" stroke="var(--color-success)" stroke-width="2"/></svg>
+          </div>
+        </article>
+
+        <article class="metric-card" aria-label="Active pipelines: 38">
+          <div class="metric-card__header">
+            <span class="metric-card__label">Active Pipelines</span>
+            <div class="has-tooltip">
+              <button class="icon-btn" aria-label="About active pipelines metric" aria-describedby="tt-pipelines" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </button>
+              <span class="tooltip" role="tooltip" id="tt-pipelines">Number of currently running data pipelines</span>
+            </div>
+          </div>
+          <div class="metric-card__value">38</div>
+          <div class="metric-card__change metric-card__change--down" aria-label="Down 2 from last month">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+            −2
+          </div>
+          <div class="metric-card__chart" aria-hidden="true">
+            <svg viewBox="0 0 200 40"><polyline points="0,10 25,12 50,8 75,14 100,18 125,22 150,20 175,26 200,30" fill="none" stroke="var(--color-warning)" stroke-width="2"/></svg>
+          </div>
+        </article>
+
+        <article class="metric-card" aria-label="Alerts this week: 7">
+          <div class="metric-card__header">
+            <span class="metric-card__label">Alerts</span>
+            <div class="has-tooltip">
+              <button class="icon-btn" aria-label="About alerts metric" aria-describedby="tt-alerts" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </button>
+              <span class="tooltip" role="tooltip" id="tt-alerts">Data quality and pipeline alerts triggered this week</span>
+            </div>
+          </div>
+          <div class="metric-card__value">7</div>
+          <div class="metric-card__change metric-card__change--down" aria-label="Down 5 from last week (improvement)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+            −5
+          </div>
+          <div class="metric-card__chart" aria-hidden="true">
+            <svg viewBox="0 0 200 40"><polyline points="0,8 25,14 50,20 75,18 100,26 125,30 150,28 175,32 200,35" fill="none" stroke="var(--color-danger)" stroke-width="2"/></svg>
+          </div>
+        </article>
+      </section>
+
+      <!-- ==========================================
+           DATA CATALOG SECTION
+           ========================================== -->
+      <section class="section" id="catalog-section" aria-labelledby="catalog-heading">
+        <div class="section__header">
+          <h2 class="section__title" id="catalog-heading">Data Catalog</h2>
+          <div class="dropdown has-tooltip">
+            <button class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Filter catalog assets" aria-describedby="tt-filter" id="filter-menu-btn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            </button>
+            <span class="tooltip" role="tooltip" id="tt-filter">Filter assets</span>
+            <div class="dropdown__menu dropdown__menu--filter" role="menu" aria-labelledby="filter-menu-btn" aria-hidden="true" id="filter-dropdown">
+              <div class="dropdown__header">Filter Assets</div>
+              <button class="dropdown__item" role="menuitem" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                Tables Only
+              </button>
+              <button class="dropdown__item" role="menuitem" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Views Only
+              </button>
+              <button class="dropdown__item" role="menuitem" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Pipelines Only
+              </button>
+              <div class="dropdown__sep" role="separator"></div>
+              <button class="dropdown__item" role="menuitem" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                Verified Assets
+              </button>
+              <button class="dropdown__item" role="menuitem" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                Contains PII
+              </button>
+              <div class="dropdown__sep" role="separator"></div>
+              <button class="dropdown__item" role="menuitem" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="widget__header">
+            <h3 class="widget__title">
+              Recent Assets
+              <div class="has-tooltip" style="display:inline-flex">
+                <button class="icon-btn" aria-label="About recent assets" aria-describedby="tt-recent" type="button" style="width:24px;height:24px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </button>
+                <span class="tooltip" role="tooltip" id="tt-recent">Assets modified in the last 7 days</span>
+              </div>
+            </h3>
+            <div class="dropdown">
+              <button class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="More actions for recent assets" id="catalog-menu-btn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+              </button>
+              <div class="dropdown__menu" role="menu" aria-labelledby="catalog-menu-btn" aria-hidden="true" id="catalog-dropdown">
+                <button class="dropdown__item" role="menuitem" tabindex="-1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Export as CSV
+                </button>
+                <button class="dropdown__item" role="menuitem" tabindex="-1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  View lineage
+                </button>
+                <div class="dropdown__sep" role="separator"></div>
+                <button class="dropdown__item dropdown__item--danger" role="menuitem" tabindex="-1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                  Delete selected
+                </button>
+              </div>
+            </div>
+          </div>
+          <ul class="data-list" role="list" aria-label="Data catalog assets">
+            <li class="data-list__item" role="listitem" tabindex="0" data-asset="customers_dim" aria-label="customers_dim table, PostgreSQL, quality verified">
+              <div class="data-list__icon data-list__icon--table" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              </div>
+              <div class="data-list__info">
+                <span class="data-list__name">customers_dim</span>
+                <span class="data-list__meta">PostgreSQL · 1.2M rows · Updated 2h ago</span>
+              </div>
+              <div class="data-list__tags">
+                <span class="tag tag--quality">Verified</span>
+                <span class="tag tag--pii">PII</span>
+              </div>
+              <div class="data-list__actions">
+                <div class="has-tooltip">
+                  <button class="icon-btn action-edit" aria-label="Edit customers_dim" type="button" data-asset="customers_dim">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                  <span class="tooltip" role="tooltip">Edit asset</span>
+                </div>
+                <div class="has-tooltip">
+                  <button class="icon-btn action-delete" aria-label="Delete customers_dim" type="button" data-asset="customers_dim">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                  </button>
+                  <span class="tooltip" role="tooltip">Delete asset</span>
+                </div>
+              </div>
+            </li>
+            <li class="data-list__item" role="listitem" tabindex="0" data-asset="orders_fact" aria-label="orders_fact table, Snowflake, quality verified">
+              <div class="data-list__icon data-list__icon--table" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              </div>
+              <div class="data-list__info">
+                <span class="data-list__name">orders_fact</span>
+                <span class="data-list__meta">Snowflake · 8.4M rows · Updated 30m ago</span>
+              </div>
+              <div class="data-list__tags">
+                <span class="tag tag--quality">Verified</span>
+                <span class="tag tag--source">Warehouse</span>
+              </div>
+              <div class="data-list__actions">
+                <div class="has-tooltip">
+                  <button class="icon-btn action-edit" aria-label="Edit orders_fact" type="button" data-asset="orders_fact">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                  <span class="tooltip" role="tooltip">Edit asset</span>
+                </div>
+                <div class="has-tooltip">
+                  <button class="icon-btn action-delete" aria-label="Delete orders_fact" type="button" data-asset="orders_fact">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                  </button>
+                  <span class="tooltip" role="tooltip">Delete asset</span>
+                </div>
+              </div>
+            </li>
+            <li class="data-list__item" role="listitem" tabindex="0" data-asset="v_revenue_monthly" aria-label="v_revenue_monthly view, Snowflake">
+              <div class="data-list__icon data-list__icon--view" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </div>
+              <div class="data-list__info">
+                <span class="data-list__name">v_revenue_monthly</span>
+                <span class="data-list__meta">Snowflake · View · Updated 1d ago</span>
+              </div>
+              <div class="data-list__tags">
+                <span class="tag tag--source">Finance</span>
+              </div>
+              <div class="data-list__actions">
+                <div class="has-tooltip">
+                  <button class="icon-btn action-edit" aria-label="Edit v_revenue_monthly" type="button" data-asset="v_revenue_monthly">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                  <span class="tooltip" role="tooltip">Edit asset</span>
+                </div>
+                <!-- Disabled delete: demonstrating disabled state best practice -->
+                <div class="has-tooltip">
+                  <button class="icon-btn" aria-disabled="true" aria-label="Cannot delete v_revenue_monthly — asset is protected by governance policy" title="Protected by governance policy" type="button" tabindex="0">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                  </button>
+                  <span class="tooltip" role="tooltip">Protected — cannot delete</span>
+                </div>
+              </div>
+            </li>
+            <li class="data-list__item" role="listitem" tabindex="0" data-asset="user_events_raw" aria-label="user_events_raw table, BigQuery, contains PII">
+              <div class="data-list__icon data-list__icon--table" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              </div>
+              <div class="data-list__info">
+                <span class="data-list__name">user_events_raw</span>
+                <span class="data-list__meta">BigQuery · 42M rows · Updated 5m ago</span>
+              </div>
+              <div class="data-list__tags">
+                <span class="tag tag--pii">PII</span>
+                <span class="tag tag--source">Streaming</span>
+              </div>
+              <div class="data-list__actions">
+                <div class="has-tooltip">
+                  <button class="icon-btn action-edit" aria-label="Edit user_events_raw" type="button" data-asset="user_events_raw">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                  <span class="tooltip" role="tooltip">Edit asset</span>
+                </div>
+                <div class="has-tooltip">
+                  <button class="icon-btn action-delete" aria-label="Delete user_events_raw" type="button" data-asset="user_events_raw">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                  </button>
+                  <span class="tooltip" role="tooltip">Delete asset</span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PIPELINES + CHART SECTION (two-col)
+           ========================================== -->
+      <div class="two-col" id="pipeline-section">
+        <section class="section" aria-labelledby="pipeline-heading">
+          <div class="section__header">
+            <h2 class="section__title" id="pipeline-heading">Pipelines</h2>
+          </div>
+          <div class="widget">
+            <div class="widget__header">
+              <h3 class="widget__title">Recent Runs</h3>
+            </div>
+            <ul class="data-list" role="list" aria-label="Pipeline runs">
+              <li class="data-list__item" role="listitem" tabindex="0" data-asset="etl_customers" aria-label="ETL Customers pipeline, succeeded">
+                <div class="data-list__icon data-list__icon--pipeline" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div class="data-list__info">
+                  <span class="data-list__name">ETL — Customers</span>
+                  <span class="data-list__meta">Ran 15m ago · 2m 34s</span>
+                </div>
+                <div class="data-list__tags">
+                  <span class="tag tag--quality">Success</span>
+                </div>
+                <div class="data-list__actions">
+                  <div class="has-tooltip">
+                    <button class="icon-btn action-edit" aria-label="Edit ETL Customers pipeline" type="button" data-asset="etl_customers">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                    <span class="tooltip" role="tooltip">Edit pipeline</span>
+                  </div>
+                  <div class="has-tooltip">
+                    <button class="icon-btn action-delete" aria-label="Delete ETL Customers pipeline" type="button" data-asset="etl_customers">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                    </button>
+                    <span class="tooltip" role="tooltip">Delete pipeline</span>
+                  </div>
+                </div>
+              </li>
+              <li class="data-list__item" role="listitem" tabindex="0" data-asset="sync_analytics" aria-label="Sync Analytics pipeline, failed">
+                <div class="data-list__icon data-list__icon--pipeline" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div class="data-list__info">
+                  <span class="data-list__name">Sync — Analytics</span>
+                  <span class="data-list__meta">Ran 1h ago · Failed at step 3</span>
+                </div>
+                <div class="data-list__tags">
+                  <span class="tag tag--pii">Failed</span>
+                </div>
+                <div class="data-list__actions">
+                  <div class="has-tooltip">
+                    <button class="icon-btn action-edit" aria-label="Edit Sync Analytics pipeline" type="button" data-asset="sync_analytics">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                    <span class="tooltip" role="tooltip">Edit pipeline</span>
+                  </div>
+                  <div class="has-tooltip">
+                    <button class="icon-btn action-delete" aria-label="Delete Sync Analytics pipeline" type="button" data-asset="sync_analytics">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                    </button>
+                    <span class="tooltip" role="tooltip">Delete pipeline</span>
+                  </div>
+                </div>
+              </li>
+              <li class="data-list__item" role="listitem" tabindex="0" data-asset="ml_feature_store" aria-label="ML Feature Store pipeline, running">
+                <div class="data-list__icon data-list__icon--pipeline" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div class="data-list__info">
+                  <span class="data-list__name">ML Feature Store</span>
+                  <span class="data-list__meta">Started 4m ago · Running…</span>
+                </div>
+                <div class="data-list__tags">
+                  <span class="tag tag--source">Running</span>
+                </div>
+                <div class="data-list__actions">
+                  <div class="has-tooltip">
+                    <button class="icon-btn" aria-disabled="true" aria-label="Cannot edit ML Feature Store — pipeline is currently running" title="Pipeline is running" type="button" tabindex="0">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                    <span class="tooltip" role="tooltip">Cannot edit — running</span>
+                  </div>
+                  <div class="has-tooltip">
+                    <button class="icon-btn" aria-disabled="true" aria-label="Cannot delete ML Feature Store — pipeline is currently running" title="Pipeline is running" type="button" tabindex="0">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                    </button>
+                    <span class="tooltip" role="tooltip">Cannot delete — running</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="chart-heading">
+          <div class="section__header">
+            <h2 class="section__title" id="chart-heading">Quality Trends</h2>
+          </div>
+          <div class="widget">
+            <div class="widget__header">
+              <h3 class="widget__title">Weekly Quality Score</h3>
+            </div>
+            <!-- Visual chart: aria-hidden so SR skips it -->
+            <div class="chart-area" aria-hidden="true">
+              <div class="chart-bar-group">
+                <div class="chart-bar-col">
+                  <div class="chart-bar" style="height:107px;background:var(--color-accent)"></div>
+                  <div class="chart-bar chart-bar--danger" style="height:7px;background:var(--color-danger)"></div>
+                  <span class="chart-bar__label">Mon</span>
+                </div>
+                <div class="chart-bar-col">
+                  <div class="chart-bar" style="height:112px;background:var(--color-accent)"></div>
+                  <div class="chart-bar chart-bar--danger" style="height:5px;background:var(--color-danger)"></div>
+                  <span class="chart-bar__label">Tue</span>
+                </div>
+                <div class="chart-bar-col">
+                  <div class="chart-bar" style="height:103px;background:var(--color-accent)"></div>
+                  <div class="chart-bar chart-bar--danger" style="height:12px;background:var(--color-danger)"></div>
+                  <span class="chart-bar__label">Wed</span>
+                </div>
+                <div class="chart-bar-col">
+                  <div class="chart-bar" style="height:116px;background:var(--color-accent)"></div>
+                  <div class="chart-bar chart-bar--danger" style="height:4px;background:var(--color-danger)"></div>
+                  <span class="chart-bar__label">Thu</span>
+                </div>
+                <div class="chart-bar-col">
+                  <div class="chart-bar" style="height:111px;background:var(--color-accent)"></div>
+                  <div class="chart-bar chart-bar--danger" style="height:6px;background:var(--color-danger)"></div>
+                  <span class="chart-bar__label">Fri</span>
+                </div>
+              </div>
+              <div class="chart-legend">
+                <div class="chart-legend__item"><span class="chart-legend__dot" style="background:var(--color-accent)"></span> Checks passed</div>
+                <div class="chart-legend__item"><span class="chart-legend__dot" style="background:var(--color-danger)"></span> Flagged</div>
+              </div>
+            </div>
+            <!-- Accessible data table for screen readers — outside aria-hidden -->
+            <table class="sr-only">
+              <caption>Weekly quality scores: checks passed vs flagged</caption>
+              <thead><tr><th scope="col">Day</th><th scope="col">Checks Passed</th><th scope="col">Flagged</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Monday</th><td>88%</td><td>6%</td></tr>
+                <tr><th scope="row">Tuesday</th><td>92%</td><td>4%</td></tr>
+                <tr><th scope="row">Wednesday</th><td>85%</td><td>10%</td></tr>
+                <tr><th scope="row">Thursday</th><td>95%</td><td>3%</td></tr>
+                <tr><th scope="row">Friday</th><td>91%</td><td>5%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==========================================
+       EDIT MODAL — role="dialog", focus trap
+       ========================================== -->
+  <div class="modal-overlay" id="edit-modal-overlay" aria-hidden="true" role="presentation">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title" id="edit-modal">
+      <div class="modal__header">
+        <h2 class="modal__title" id="edit-modal-title">Edit Asset</h2>
+        <button class="icon-btn" aria-label="Close dialog" type="button" id="edit-modal-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label for="edit-name" class="form-label">
+            Asset Name
+            <span class="form-label__required" aria-label="required">*</span>
+          </label>
+          <input type="text" id="edit-name" class="form-input" required aria-required="true" aria-describedby="edit-name-hint" value="">
+          <p class="form-hint" id="edit-name-hint">The unique identifier for this data asset.</p>
+          <div class="form-error" id="edit-name-error" role="alert" aria-live="polite" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="edit-name-error-text">Asset name is required.</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-desc" class="form-label">Description</label>
+          <textarea id="edit-desc" class="form-input" rows="3" aria-describedby="edit-desc-hint" placeholder="Describe this data asset…"></textarea>
+          <p class="form-hint" id="edit-desc-hint">Provide context for data consumers. Markdown is supported.</p>
+        </div>
+        <div class="form-group">
+          <label for="edit-owner" class="form-label">
+            Owner
+            <span class="form-label__required" aria-label="required">*</span>
+          </label>
+          <select id="edit-owner" class="form-select" required aria-required="true" aria-describedby="edit-owner-hint">
+            <option value="">Select an owner…</option>
+            <option value="alex">Vincent Olivari</option>
+            <option value="maria">Maria Garcia</option>
+            <option value="james">James Wilson</option>
+            <option value="sarah">Sarah Kim</option>
+          </select>
+          <p class="form-hint" id="edit-owner-hint">The person responsible for this data asset.</p>
+          <div class="form-error" id="edit-owner-error" role="alert" aria-live="polite" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="edit-owner-error-text">Please select an owner.</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-tags" class="form-label">Tags</label>
+          <input type="text" id="edit-tags" class="form-input" aria-describedby="edit-tags-hint" placeholder="e.g., finance, pii, verified">
+          <p class="form-hint" id="edit-tags-hint">Comma-separated list of tags for categorization.</p>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" type="button" id="edit-modal-cancel">Cancel</button>
+        <button class="btn btn--primary" type="button" id="edit-modal-save">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       DELETE CONFIRMATION MODAL
+       ========================================== -->
+  <div class="modal-overlay" id="delete-modal-overlay" aria-hidden="true" role="presentation">
+    <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="delete-modal-title" aria-describedby="delete-modal-desc" id="delete-modal">
+      <div class="modal__header">
+        <h2 class="modal__title" id="delete-modal-title">Delete Asset</h2>
+        <button class="icon-btn" aria-label="Close dialog" type="button" id="delete-modal-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <p id="delete-modal-desc">Are you sure you want to delete <strong id="delete-asset-name"></strong>? This action cannot be undone. All associated metadata and lineage will be permanently removed.</p>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" type="button" id="delete-modal-cancel">Cancel</button>
+        <button class="btn btn--danger" type="button" id="delete-modal-confirm">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       RIGHT DRAWER — focus trap + tabs
+       ========================================== -->
+  <div class="drawer-overlay" id="drawer-overlay" aria-hidden="true" onclick="closeDrawer()"></div>
+  <aside class="drawer" id="asset-drawer" aria-hidden="true" aria-labelledby="drawer-title" role="dialog" aria-modal="true">
+    <div class="drawer__header">
+      <div>
+        <h2 class="drawer__title" id="drawer-title">Asset Details</h2>
+        <p class="drawer__subtitle" id="drawer-subtitle"></p>
+      </div>
+      <button class="icon-btn" aria-label="Close asset details drawer" type="button" id="drawer-close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Tabs — WCAG role="tablist" -->
+    <div class="drawer__tabs" role="tablist" aria-label="Asset detail tabs">
+      <button class="drawer__tab" role="tab" aria-selected="true" aria-controls="tab-general" id="tab-btn-general" tabindex="0">General</button>
+      <button class="drawer__tab" role="tab" aria-selected="false" aria-controls="tab-properties" id="tab-btn-properties" tabindex="-1">Properties</button>
+      <button class="drawer__tab" role="tab" aria-selected="false" aria-controls="tab-people" id="tab-btn-people" tabindex="-1">People</button>
+    </div>
+
+    <div class="drawer__tab-panel" role="tabpanel" id="tab-general" aria-labelledby="tab-btn-general" aria-hidden="false" tabindex="0">
+      <div class="detail-row">
+        <span class="detail-row__label">Type</span>
+        <span class="detail-row__value" id="detail-type">Table</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Source</span>
+        <span class="detail-row__value" id="detail-source">PostgreSQL</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Schema</span>
+        <span class="detail-row__value" id="detail-schema">public</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Row Count</span>
+        <span class="detail-row__value" id="detail-rows">1,200,000</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Last Updated</span>
+        <span class="detail-row__value" id="detail-updated">2 hours ago</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Quality Score</span>
+        <span class="detail-row__value" id="detail-quality">96%</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Description</span>
+        <span class="detail-row__value" id="detail-desc" style="max-width:220px">Core customer dimension table containing demographic and account data.</span>
+      </div>
+    </div>
+
+    <div class="drawer__tab-panel" role="tabpanel" id="tab-properties" aria-labelledby="tab-btn-properties" aria-hidden="true" tabindex="0">
+      <div class="detail-row">
+        <span class="detail-row__label">Created</span>
+        <span class="detail-row__value">Jan 15, 2025</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Classification</span>
+        <span class="detail-row__value">Confidential</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Refresh Frequency</span>
+        <span class="detail-row__value">Hourly</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Retention Policy</span>
+        <span class="detail-row__value">90 days</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Lineage Depth</span>
+        <span class="detail-row__value">3 upstream, 7 downstream</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Format</span>
+        <span class="detail-row__value">Parquet</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Compression</span>
+        <span class="detail-row__value">Snappy</span>
+      </div>
+    </div>
+
+    <div class="drawer__tab-panel" role="tabpanel" id="tab-people" aria-labelledby="tab-btn-people" aria-hidden="true" tabindex="0">
+      <div class="person-row">
+        <div class="person-avatar" style="background:linear-gradient(135deg,#4C6FD1,#7C5CBF)">VO</div>
+        <div>
+          <div class="person-name">Vincent Olivari</div>
+          <div class="person-role">Owner · Data Engineering</div>
+        </div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:linear-gradient(135deg,#34D399,#6EE7B7)">MG</div>
+        <div>
+          <div class="person-name">Maria Garcia</div>
+          <div class="person-role">Steward · Data Governance</div>
+        </div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:linear-gradient(135deg,#FBBF24,#F59E0B)">JW</div>
+        <div>
+          <div class="person-name">James Wilson</div>
+          <div class="person-role">Consumer · Analytics</div>
+        </div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:linear-gradient(135deg,#F87171,#FB923C)">SK</div>
+        <div>
+          <div class="person-name">Sarah Kim</div>
+          <div class="person-role">Consumer · Product</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- KEYBOARD SHORTCUTS HELP BAR -->
+  <div class="kbd-help-bar" id="kbd-help-bar" aria-hidden="true" role="region" aria-label="Keyboard shortcuts">
+    <div class="kbd-help-bar__item"><span class="kbd-help-bar__key">F6</span> Cycle landmarks</div>
+    <div class="kbd-help-bar__item"><span class="kbd-help-bar__key">⇧F6</span> Cycle backwards</div>
+    <div class="kbd-help-bar__item"><span class="kbd-help-bar__key">⌘K</span> Search</div>
+    <div class="kbd-help-bar__item"><span class="kbd-help-bar__key">Esc</span> Close overlays</div>
+    <div class="kbd-help-bar__item"><span class="kbd-help-bar__key">Tab</span> Next element</div>
+    <div class="kbd-help-bar__item"><span class="kbd-help-bar__key">?</span> Toggle this bar</div>
+    <button class="icon-btn kbd-help-bar__close" aria-label="Close keyboard shortcuts bar" type="button" id="kbd-help-close">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <!-- WCAG REFERENCE BADGE -->
+  <div class="wcag-badge">
+    <button class="wcag-badge__trigger" aria-expanded="false" aria-controls="wcag-panel" id="wcag-toggle" type="button">
+      <span class="wcag-badge__dot" aria-hidden="true"></span>
+      WCAG 2.1 AA
+    </button>
+    <div class="wcag-panel" id="wcag-panel" aria-hidden="true" role="region" aria-label="WCAG compliance checklist">
+      <h3>Compliance Checklist</h3>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div><span class="wcag-panel__tag">3.1.1</span> Language of Page — <code>lang="en"</code> on <code>&lt;html&gt;</code></div>
+      </div>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div><span class="wcag-panel__tag">2.1.1</span> Keyboard — All interactive elements reachable &amp; operable via keyboard</div>
+      </div>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div><span class="wcag-panel__tag">2.4.7</span> Focus Visible — 3px blue focus ring on all focusable elements</div>
+      </div>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div><span class="wcag-panel__tag">2.4.1</span> Bypass Blocks — Skip links to main content, nav, search, sections</div>
+      </div>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div><span class="wcag-panel__tag">F6</span> Landmark cycling — press F6 / Shift+F6 to jump between header, nav, and main</div>
+      </div>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div><span class="wcag-panel__tag">1.3.1</span> Info &amp; Relationships — Semantic HTML, ARIA landmarks, labels</div>
+      </div>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div><span class="wcag-panel__tag">4.1.2</span> Name, Role, Value — aria-label, role, aria-expanded, aria-modal</div>
+      </div>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div>Focus trapping in modals &amp; drawer with Escape to close</div>
+      </div>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div>Disabled states use <code>aria-disabled</code> with descriptive labels</div>
+      </div>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div>Live region for screen reader announcements</div>
+      </div>
+      <div class="wcag-panel__item">
+        <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <div>Press <kbd style="font-family:var(--font-mono);font-size:10px;padding:1px 4px;background:var(--color-surface-hover);border-radius:3px;border:1px solid var(--color-border)">?</kbd> to view all keyboard shortcuts</div>
+      </div>
+      <button class="wt-tour-btn" id="wt-tour-btn" type="button" aria-label="Take the WCAG accessibility tour" style="width:100%;justify-content:center;margin-top:14px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Take the Tour
+      </button>
+    </div>
+  </div>
+
+  <!-- WALKTHROUGH OVERLAY -->
+  <div class="wt-overlay" id="wt-overlay" aria-hidden="true" role="dialog" aria-label="WCAG accessibility tour" aria-modal="true">
+    <div class="wt-spotlight" id="wt-spotlight"></div>
+    <div class="wt-card" id="wt-card">
+      <div class="wt-card__header">
+        <span class="wt-card__step" id="wt-step-counter"></span>
+        <span class="wt-card__tag" id="wt-wcag-tag"></span>
+        <button class="wt-card__close" id="wt-close" aria-label="Close tour" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="wt-card__body">
+        <div class="wt-card__title" id="wt-title"></div>
+        <div class="wt-card__desc" id="wt-desc"></div>
+        <div class="wt-card__impact" id="wt-impact"></div>
+        <div class="wt-card__sr">
+          <div class="wt-card__sr-label">Screen Reader Output</div>
+          <pre id="wt-sr-output"></pre>
+        </div>
+      </div>
+      <div class="wt-card__footer">
+        <div class="wt-card__progress" id="wt-progress"></div>
+        <div class="wt-card__nav">
+          <button class="wt-card__btn wt-card__btn--secondary" id="wt-prev" type="button">Previous</button>
+          <button class="wt-card__btn wt-card__btn--primary" id="wt-next" type="button">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       JAVASCRIPT — All accessibility interactions
+       ========================================== -->
+  <script>
+    // ============================================
+    // UTILITY: Announce to screen reader
+    // ============================================
+    function announce(msg) {
+      const el = document.getElementById('live-region');
+      el.textContent = '';
+      // Small delay ensures SR picks up the change
+      requestAnimationFrame(() => { el.textContent = msg; });
+    }
+
+    // ============================================
+    // UTILITY: Dynamic Tooltip Positioning
+    // ============================================
+    function positionTooltip(tooltipEl) {
+      const parent = tooltipEl.closest('.has-tooltip');
+      if (!parent) return;
+
+      const parentRect = parent.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const margin = 10;
+
+      // Temporarily show tooltip off-screen to measure its dimensions
+      tooltipEl.style.visibility = 'hidden';
+      tooltipEl.style.opacity = '0';
+      tooltipEl.style.display = 'block';
+      const tipWidth = tooltipEl.offsetWidth;
+      const tipHeight = tooltipEl.offsetHeight;
+      tooltipEl.style.visibility = '';
+      tooltipEl.style.opacity = '';
+      tooltipEl.style.display = '';
+
+      // Remove any existing position classes
+      tooltipEl.classList.remove('tooltip--top', 'tooltip--bottom', 'tooltip--left', 'tooltip--right');
+
+      // Check if tooltip fits in each direction relative to the parent
+      const spaceAbove = parentRect.top;
+      const spaceBelow = viewportHeight - parentRect.bottom;
+      const spaceLeft = parentRect.left;
+      const spaceRight = viewportWidth - parentRect.right;
+
+      // For top/bottom: also check if tooltip centered horizontally stays in viewport
+      const centeredLeft = parentRect.left + parentRect.width / 2 - tipWidth / 2;
+      const centeredRight = parentRect.left + parentRect.width / 2 + tipWidth / 2;
+      const fitsHorizontallyCentered = centeredLeft >= margin && centeredRight <= viewportWidth - margin;
+
+      const fitsTop = spaceAbove >= tipHeight + 8 + margin;
+      const fitsBottom = spaceBelow >= tipHeight + 8 + margin;
+      const fitsLeftSide = spaceLeft >= tipWidth + 8 + margin;
+      const fitsRightSide = spaceRight >= tipWidth + 8 + margin;
+
+      if (fitsTop && fitsHorizontallyCentered) {
+        tooltipEl.classList.add('tooltip--top');
+      } else if (fitsBottom && fitsHorizontallyCentered) {
+        tooltipEl.classList.add('tooltip--bottom');
+      } else if (fitsRightSide) {
+        tooltipEl.classList.add('tooltip--right');
+      } else if (fitsLeftSide) {
+        tooltipEl.classList.add('tooltip--left');
+      } else {
+        tooltipEl.classList.add('tooltip--bottom');
+      }
+    }
+
+    // Initialize tooltip positioning on all tooltips
+    document.addEventListener('DOMContentLoaded', () => {
+      const tooltips = document.querySelectorAll('.tooltip');
+      tooltips.forEach(tooltip => {
+        const parent = tooltip.closest('.has-tooltip');
+        if (parent) {
+          parent.addEventListener('mouseenter', () => positionTooltip(tooltip));
+          parent.addEventListener('focusin', () => positionTooltip(tooltip));
+        }
+      });
+    });
+
+    // ============================================
+    // UTILITY: Focus trap
+    // ============================================
+    function getFocusableElements(container) {
+      const selector = 'a[href], button:not([disabled]):not([aria-disabled="true"]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+      return [...container.querySelectorAll(selector)].filter(el => {
+        // Check if element is visible
+        if (el.offsetParent === null) return false;
+        // Check if element or ancestor has aria-hidden="true"
+        let node = el;
+        while (node && node !== container) {
+          if (node.getAttribute && node.getAttribute('aria-hidden') === 'true') return false;
+          node = node.parentElement;
+        }
+        return true;
+      });
+    }
+
+    function trapFocus(container) {
+      // Release any existing trap first
+      releaseFocus(container);
+
+      const focusable = getFocusableElements(container);
+      if (focusable.length === 0) return;
+
+      function handler(e) {
+        if (e.key !== 'Tab') return;
+
+        // Recalculate focusable elements on each Tab press
+        // (in case tabs were switched or content changed)
+        const current = getFocusableElements(container);
+        if (current.length === 0) return;
+
+        const first = current[0];
+        const last = current[current.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+      container._focusTrapHandler = handler;
+      container.addEventListener('keydown', handler);
+    }
+
+    function releaseFocus(container) {
+      if (container._focusTrapHandler) {
+        container.removeEventListener('keydown', container._focusTrapHandler);
+        delete container._focusTrapHandler;
+      }
+    }
+
+    // ============================================
+    // DROPDOWN MENU — keyboard nav
+    // role="menu", arrow keys, escape
+    // ============================================
+    document.querySelectorAll('.dropdown').forEach(dropdown => {
+      const trigger = dropdown.querySelector('[aria-haspopup]');
+      const menu = dropdown.querySelector('.dropdown__menu');
+      const items = [...menu.querySelectorAll('[role="menuitem"]')];
+
+      function openMenu() {
+        menu.setAttribute('aria-hidden', 'false');
+        trigger.setAttribute('aria-expanded', 'true');
+        items[0]?.focus();
+        announce('Menu opened');
+      }
+      function closeMenu() {
+        menu.setAttribute('aria-hidden', 'true');
+        trigger.setAttribute('aria-expanded', 'false');
+        trigger.focus();
+        announce('Menu closed');
+      }
+
+      trigger.addEventListener('click', () => {
+        const open = menu.getAttribute('aria-hidden') === 'false';
+        open ? closeMenu() : openMenu();
+      });
+
+      trigger.addEventListener('keydown', e => {
+        if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openMenu();
+        }
+      });
+
+      menu.addEventListener('keydown', e => {
+        const idx = items.indexOf(document.activeElement);
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          items[(idx + 1) % items.length].focus();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          items[(idx - 1 + items.length) % items.length].focus();
+        } else if (e.key === 'Escape') {
+          closeMenu();
+        } else if (e.key === 'Tab') {
+          closeMenu();
+        }
+      });
+
+      // Close on outside click
+      document.addEventListener('click', e => {
+        if (!dropdown.contains(e.target)) {
+          menu.setAttribute('aria-hidden', 'true');
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+
+    // ============================================
+    // EDIT MODAL
+    // ============================================
+    const editOverlay = document.getElementById('edit-modal-overlay');
+    const editModal = document.getElementById('edit-modal');
+    let editTrigger = null;
+
+    // Asset data for the modal
+    const assetData = {
+      customers_dim: { name: 'customers_dim', desc: 'Core customer dimension table with demographic data.', owner: 'alex', tags: 'verified, pii' },
+      orders_fact: { name: 'orders_fact', desc: 'Fact table for all customer orders.', owner: 'maria', tags: 'verified, warehouse' },
+      v_revenue_monthly: { name: 'v_revenue_monthly', desc: 'Monthly aggregated revenue view.', owner: 'james', tags: 'finance' },
+      user_events_raw: { name: 'user_events_raw', desc: 'Raw user event stream from analytics SDK.', owner: 'sarah', tags: 'pii, streaming' },
+      etl_customers: { name: 'ETL — Customers', desc: 'Customer data ETL pipeline.', owner: 'alex', tags: 'etl' },
+      sync_analytics: { name: 'Sync — Analytics', desc: 'Analytics data sync pipeline.', owner: 'maria', tags: 'sync' },
+      ml_feature_store: { name: 'ML Feature Store', desc: 'ML feature engineering pipeline.', owner: 'james', tags: 'ml' },
+    };
+
+    // Form validation helpers
+    function showFieldError(fieldId, errorId, message) {
+      const field = document.getElementById(fieldId);
+      const errorDiv = document.getElementById(errorId);
+      const errorText = document.getElementById(`${errorId}-text`);
+
+      field.classList.add(field.tagName === 'SELECT' ? 'form-select--error' : 'form-input--error');
+      field.setAttribute('aria-invalid', 'true');
+
+      // Update aria-describedby to include error
+      const describedby = field.getAttribute('aria-describedby') || '';
+      if (!describedby.includes(errorId)) {
+        field.setAttribute('aria-describedby', describedby ? `${describedby} ${errorId}` : errorId);
+      }
+
+      errorText.textContent = message;
+      errorDiv.style.display = 'flex';
+    }
+
+    function hideFieldError(fieldId, errorId) {
+      const field = document.getElementById(fieldId);
+      const errorDiv = document.getElementById(errorId);
+
+      field.classList.remove('form-input--error', 'form-select--error');
+      field.setAttribute('aria-invalid', 'false');
+
+      // Remove error ID from aria-describedby but keep hint ID
+      const describedby = field.getAttribute('aria-describedby') || '';
+      const ids = describedby.split(/\s+/).filter(id => id && id !== errorId);
+      if (ids.length > 0) {
+        field.setAttribute('aria-describedby', ids.join(' '));
+      } else {
+        field.removeAttribute('aria-describedby');
+      }
+
+      errorDiv.style.display = 'none';
+    }
+
+    function validateField(fieldId, errorId, validationFn, errorMessage) {
+      const field = document.getElementById(fieldId);
+      const value = field.value.trim();
+
+      if (!validationFn(value)) {
+        showFieldError(fieldId, errorId, errorMessage);
+        return false;
+      } else {
+        hideFieldError(fieldId, errorId);
+        return true;
+      }
+    }
+
+    function validateEditForm() {
+      const nameValid = validateField(
+        'edit-name',
+        'edit-name-error',
+        value => value.length > 0,
+        'Asset name is required.'
+      );
+
+      const ownerValid = validateField(
+        'edit-owner',
+        'edit-owner-error',
+        value => value.length > 0,
+        'Please select an owner.'
+      );
+
+      return nameValid && ownerValid;
+    }
+
+    function openModal(assetId) {
+      editTrigger = document.activeElement;
+      const data = assetData[assetId] || { name: assetId, desc: '', owner: '', tags: '' };
+
+      // Clear any existing errors
+      hideFieldError('edit-name', 'edit-name-error');
+      hideFieldError('edit-owner', 'edit-owner-error');
+
+      document.getElementById('edit-name').value = data.name;
+      document.getElementById('edit-desc').value = data.desc;
+      document.getElementById('edit-owner').value = data.owner;
+      document.getElementById('edit-tags').value = data.tags;
+      document.getElementById('edit-modal-title').textContent = `Edit: ${data.name}`;
+
+      editOverlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      trapFocus(editModal);
+
+      // Focus the first input
+      requestAnimationFrame(() => document.getElementById('edit-name').focus());
+      announce(`Edit dialog opened for ${data.name}`);
+    }
+
+    function closeEditModal() {
+      editOverlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      releaseFocus(editModal);
+      if (editTrigger) editTrigger.focus();
+      announce('Edit dialog closed');
+    }
+
+    // Real-time validation on blur
+    document.getElementById('edit-name').addEventListener('blur', () => {
+      const value = document.getElementById('edit-name').value.trim();
+      if (value.length === 0) {
+        showFieldError('edit-name', 'edit-name-error', 'Asset name is required.');
+      } else {
+        hideFieldError('edit-name', 'edit-name-error');
+      }
+    });
+
+    document.getElementById('edit-owner').addEventListener('blur', () => {
+      const value = document.getElementById('edit-owner').value;
+      if (value.length === 0) {
+        showFieldError('edit-owner', 'edit-owner-error', 'Please select an owner.');
+      } else {
+        hideFieldError('edit-owner', 'edit-owner-error');
+      }
+    });
+
+    document.getElementById('edit-modal-close').addEventListener('click', closeEditModal);
+    document.getElementById('edit-modal-cancel').addEventListener('click', closeEditModal);
+    document.getElementById('edit-modal-save').addEventListener('click', () => {
+      if (validateEditForm()) {
+        announce('Changes saved successfully');
+        closeEditModal();
+      } else {
+        announce('Please fix the errors before saving');
+        // Focus the first field with an error
+        if (document.getElementById('edit-name').getAttribute('aria-invalid') === 'true') {
+          document.getElementById('edit-name').focus();
+        } else if (document.getElementById('edit-owner').getAttribute('aria-invalid') === 'true') {
+          document.getElementById('edit-owner').focus();
+        }
+      }
+    });
+    editOverlay.addEventListener('click', e => { if (e.target === editOverlay) closeEditModal(); });
+    editOverlay.addEventListener('keydown', e => { if (e.key === 'Escape') closeEditModal(); });
+
+    // ============================================
+    // DELETE MODAL
+    // ============================================
+    const deleteOverlay = document.getElementById('delete-modal-overlay');
+    const deleteModal = document.getElementById('delete-modal');
+    let deleteTrigger = null;
+
+    function openDeleteModal(assetId) {
+      deleteTrigger = document.activeElement;
+      const data = assetData[assetId] || { name: assetId };
+      document.getElementById('delete-asset-name').textContent = data.name;
+      deleteOverlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      trapFocus(deleteModal);
+      requestAnimationFrame(() => document.getElementById('delete-modal-cancel').focus());
+      announce(`Delete confirmation dialog opened for ${data.name}`);
+    }
+
+    function closeDeleteModal() {
+      deleteOverlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      releaseFocus(deleteModal);
+      if (deleteTrigger) deleteTrigger.focus();
+      announce('Delete dialog closed');
+    }
+
+    document.getElementById('delete-modal-close').addEventListener('click', closeDeleteModal);
+    document.getElementById('delete-modal-cancel').addEventListener('click', closeDeleteModal);
+    document.getElementById('delete-modal-confirm').addEventListener('click', () => {
+      announce('Asset deleted');
+      closeDeleteModal();
+    });
+    deleteOverlay.addEventListener('click', e => { if (e.target === deleteOverlay) closeDeleteModal(); });
+    deleteOverlay.addEventListener('keydown', e => { if (e.key === 'Escape') closeDeleteModal(); });
+
+    // ============================================
+    // DRAWER — open from list items, focus trap
+    // ============================================
+    const drawerOverlay = document.getElementById('drawer-overlay');
+    const drawer = document.getElementById('asset-drawer');
+    let drawerTrigger = null;
+
+    const drawerDetails = {
+      customers_dim: { title: 'customers_dim', subtitle: 'Table · PostgreSQL', type: 'Table', source: 'PostgreSQL', schema: 'public', rows: '1,200,000', updated: '2 hours ago', quality: '96%', desc: 'Core customer dimension table containing demographic and account data.' },
+      orders_fact: { title: 'orders_fact', subtitle: 'Table · Snowflake', type: 'Table', source: 'Snowflake', schema: 'analytics', rows: '8,400,000', updated: '30 minutes ago', quality: '98%', desc: 'Fact table containing all customer order transactions with line items.' },
+      v_revenue_monthly: { title: 'v_revenue_monthly', subtitle: 'View · Snowflake', type: 'View', source: 'Snowflake', schema: 'finance', rows: '2,400', updated: '1 day ago', quality: '94%', desc: 'Monthly aggregated revenue view joining orders and customer data.' },
+      user_events_raw: { title: 'user_events_raw', subtitle: 'Table · BigQuery', type: 'Table', source: 'BigQuery', schema: 'events', rows: '42,000,000', updated: '5 minutes ago', quality: '89%', desc: 'Raw event stream from product analytics SDK. Contains PII.' },
+      etl_customers: { title: 'ETL — Customers', subtitle: 'Pipeline · Airflow', type: 'Pipeline', source: 'Airflow', schema: 'N/A', rows: 'N/A', updated: '15 minutes ago', quality: 'N/A', desc: 'Extracts customer data from CRM and loads into warehouse.' },
+      sync_analytics: { title: 'Sync — Analytics', subtitle: 'Pipeline · Airflow', type: 'Pipeline', source: 'Airflow', schema: 'N/A', rows: 'N/A', updated: '1 hour ago', quality: 'N/A', desc: 'Syncs analytics events from BigQuery to Snowflake.' },
+      ml_feature_store: { title: 'ML Feature Store', subtitle: 'Pipeline · Airflow', type: 'Pipeline', source: 'Airflow', schema: 'N/A', rows: 'N/A', updated: '4 minutes ago', quality: 'N/A', desc: 'Feature engineering pipeline for ML models.' },
+    };
+
+    function openDrawer(assetId) {
+      drawerTrigger = document.activeElement;
+      const data = drawerDetails[assetId] || { title: assetId, subtitle: '' };
+
+      document.getElementById('drawer-title').textContent = data.title || assetId;
+      document.getElementById('drawer-subtitle').textContent = data.subtitle || '';
+      document.getElementById('detail-type').textContent = data.type || '';
+      document.getElementById('detail-source').textContent = data.source || '';
+      document.getElementById('detail-schema').textContent = data.schema || '';
+      document.getElementById('detail-rows').textContent = data.rows || '';
+      document.getElementById('detail-updated').textContent = data.updated || '';
+      document.getElementById('detail-quality').textContent = data.quality || '';
+      document.getElementById('detail-desc').textContent = data.desc || '';
+
+      // Reset tabs to General
+      switchTab('general');
+
+      drawerOverlay.setAttribute('aria-hidden', 'false');
+      drawer.setAttribute('aria-hidden', 'false');
+      // Show elements first, then animate in on next frame
+      drawer.style.display = 'flex';
+      requestAnimationFrame(() => {
+        drawerOverlay.classList.add('drawer-overlay--visible');
+        drawer.classList.add('drawer--visible');
+      });
+      document.body.style.overflow = 'hidden';
+      trapFocus(drawer);
+      requestAnimationFrame(() => document.getElementById('drawer-close').focus());
+      announce(`Asset details drawer opened for ${data.title || assetId}`);
+    }
+
+    function closeDrawer() {
+      // Animate out first, then hide
+      drawerOverlay.classList.remove('drawer-overlay--visible');
+      drawer.classList.remove('drawer--visible');
+      drawer.addEventListener('transitionend', function handler() {
+        drawer.removeEventListener('transitionend', handler);
+        drawerOverlay.setAttribute('aria-hidden', 'true');
+        drawer.setAttribute('aria-hidden', 'true');
+        drawer.style.display = 'none';
+      }, { once: true });
+      document.body.style.overflow = '';
+      releaseFocus(drawer);
+      if (drawerTrigger) drawerTrigger.focus();
+      announce('Drawer closed');
+    }
+
+    document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+    drawer.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+    // ============================================
+    // EDIT / DELETE ACTION BUTTONS (event delegation)
+    // Clicks on these must NOT bubble up to the
+    // list item and must NOT open the drawer.
+    // ============================================
+    document.querySelectorAll('.action-edit').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        openModal(btn.getAttribute('data-asset'));
+      });
+      btn.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+      });
+    });
+
+    document.querySelectorAll('.action-delete').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        openDeleteModal(btn.getAttribute('data-asset'));
+      });
+      btn.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+      });
+    });
+
+    // Disabled buttons should also stop propagation
+    document.querySelectorAll('.data-list__actions .icon-btn[aria-disabled="true"]').forEach(btn => {
+      btn.addEventListener('click', e => e.stopPropagation());
+    });
+
+    // ============================================
+    // LIST ITEMS → open drawer (only if click
+    // did NOT originate inside .data-list__actions)
+    // ============================================
+    document.querySelectorAll('.data-list__item').forEach(item => {
+      item.addEventListener('click', e => {
+        if (e.target.closest('.data-list__actions')) return;
+        const assetId = item.getAttribute('data-asset');
+        if (assetId) openDrawer(assetId);
+      });
+      item.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          if (e.target.closest('.data-list__actions')) return;
+          e.preventDefault();
+          const assetId = item.getAttribute('data-asset');
+          if (assetId) openDrawer(assetId);
+        }
+      });
+    });
+
+    // ============================================
+    // DRAWER TABS — arrow key navigation
+    // WCAG: role="tab", aria-selected, tabindex
+    // ============================================
+    const tabButtons = document.querySelectorAll('.drawer__tab');
+    const tabPanels = document.querySelectorAll('.drawer__tab-panel');
+
+    function switchTab(tabName) {
+      tabButtons.forEach(btn => {
+        const id = btn.id.replace('tab-btn-', '');
+        const selected = id === tabName;
+        btn.setAttribute('aria-selected', selected ? 'true' : 'false');
+        btn.setAttribute('tabindex', selected ? '0' : '-1');
+      });
+      tabPanels.forEach(panel => {
+        const id = panel.id.replace('tab-', '');
+        panel.setAttribute('aria-hidden', id === tabName ? 'false' : 'true');
+      });
+    }
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabName = btn.id.replace('tab-btn-', '');
+        switchTab(tabName);
+        announce(`${tabName.charAt(0).toUpperCase() + tabName.slice(1)} tab selected`);
+      });
+
+      btn.addEventListener('keydown', e => {
+        const tabs = [...tabButtons];
+        const idx = tabs.indexOf(btn);
+        let target = null;
+
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          target = tabs[(idx + 1) % tabs.length];
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          target = tabs[(idx - 1 + tabs.length) % tabs.length];
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          target = tabs[0];
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          target = tabs[tabs.length - 1];
+        }
+
+        if (target) {
+          const tabName = target.id.replace('tab-btn-', '');
+          switchTab(tabName);
+          target.focus();
+          announce(`${tabName.charAt(0).toUpperCase() + tabName.slice(1)} tab`);
+        }
+      });
+    });
+
+    // ============================================
+    // WCAG PANEL TOGGLE
+    // ============================================
+    const wcagToggle = document.getElementById('wcag-toggle');
+    const wcagPanel = document.getElementById('wcag-panel');
+
+    wcagToggle.addEventListener('click', () => {
+      const open = wcagPanel.getAttribute('aria-hidden') === 'false';
+      wcagPanel.setAttribute('aria-hidden', open ? 'true' : 'false');
+      wcagToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+
+    document.addEventListener('click', e => {
+      if (!wcagToggle.contains(e.target) && !wcagPanel.contains(e.target)) {
+        wcagPanel.setAttribute('aria-hidden', 'true');
+        wcagToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // ============================================
+    // KEYBOARD SHORTCUT: Cmd/Ctrl+K → search
+    // ============================================
+    document.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('search-input').focus();
+      }
+    });
+
+    // ============================================
+    // F6: LANDMARK CYCLING
+    // Cycles focus between major landmarks:
+    // banner → navigation → main → (and back)
+    // Shift+F6 cycles backwards.
+    // This is a common pattern in web apps (Slack,
+    // VS Code, Teams) for sighted keyboard users.
+    // Screen reader users can also use their native
+    // landmark navigation (D in NVDA, rotor in VO).
+    // ============================================
+    const landmarks = [
+      document.querySelector('[role="banner"]'),       // header
+      document.getElementById('main-nav'),              // left nav
+      document.getElementById('main-content'),          // main
+    ];
+    let currentLandmarkIndex = -1;
+
+    function cycleLandmark(reverse) {
+      if (reverse) {
+        currentLandmarkIndex = (currentLandmarkIndex - 1 + landmarks.length) % landmarks.length;
+      } else {
+        currentLandmarkIndex = (currentLandmarkIndex + 1) % landmarks.length;
+      }
+      const target = landmarks[currentLandmarkIndex];
+      if (!target) return;
+
+      // Focus the first focusable child, or the landmark itself
+      const focusable = target.querySelector(
+        'a[href], button:not([disabled]):not([aria-disabled="true"]), input, select, textarea, [tabindex="0"]'
+      );
+      if (focusable) {
+        focusable.focus();
+      } else {
+        target.setAttribute('tabindex', '-1');
+        target.focus();
+      }
+
+      // Visual pulse
+      target.classList.add('landmark-focus-ring');
+      setTimeout(() => target.classList.remove('landmark-focus-ring'), 700);
+
+      const names = ['Header', 'Navigation', 'Main content'];
+      announce(`${names[currentLandmarkIndex]} landmark`);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F6') {
+        e.preventDefault();
+        // Don't cycle if a modal/drawer/walkthrough is open
+        if (editOverlay.getAttribute('aria-hidden') === 'false') return;
+        if (deleteOverlay.getAttribute('aria-hidden') === 'false') return;
+        if (drawer.getAttribute('aria-hidden') === 'false') return;
+        if (document.getElementById('wt-overlay').getAttribute('aria-hidden') === 'false') return;
+        cycleLandmark(e.shiftKey);
+      }
+    });
+
+    // ============================================
+    // ? KEY: TOGGLE KEYBOARD SHORTCUTS HELP BAR
+    // ============================================
+    const kbdHelpBar = document.getElementById('kbd-help-bar');
+
+    function toggleKbdHelp() {
+      const open = kbdHelpBar.getAttribute('aria-hidden') === 'false';
+      kbdHelpBar.setAttribute('aria-hidden', open ? 'true' : 'false');
+      if (!open) announce('Keyboard shortcuts bar opened');
+    }
+
+    document.addEventListener('keydown', e => {
+      // Only trigger on ? when not in an input/textarea/select
+      const tag = document.activeElement.tagName.toLowerCase();
+      if (e.key === '?' && tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+        e.preventDefault();
+        toggleKbdHelp();
+      }
+    });
+
+    document.getElementById('kbd-help-close').addEventListener('click', () => {
+      kbdHelpBar.setAttribute('aria-hidden', 'true');
+    });
+
+    // ============================================
+    // WALKTHROUGH OVERLAY
+    // ============================================
+    (() => {
+      const overlay = document.getElementById('wt-overlay');
+      const spotlight = document.getElementById('wt-spotlight');
+      const card = document.getElementById('wt-card');
+      const tourBtn = document.getElementById('wt-tour-btn');
+      const closeBtn = document.getElementById('wt-close');
+      const prevBtn = document.getElementById('wt-prev');
+      const nextBtn = document.getElementById('wt-next');
+      const stepCounter = document.getElementById('wt-step-counter');
+      const wcagTag = document.getElementById('wt-wcag-tag');
+      const titleEl = document.getElementById('wt-title');
+      const descEl = document.getElementById('wt-desc');
+      const impactEl = document.getElementById('wt-impact');
+      const srOutput = document.getElementById('wt-sr-output');
+      const progressEl = document.getElementById('wt-progress');
+
+      let currentStep = 0;
+      let walkthroughActive = false;
+
+      const steps = [
+        {
+          target: '.skip-links',
+          wcag: '2.4.1',
+          title: 'Skip Links & Landmarks',
+          description: 'This page provides 5 skip links that become visible on keyboard focus, letting users jump past repeated navigation directly to content. Three semantic landmarks (banner, navigation, main) structure the page for screen reader rotor menus.',
+          impact: 'Without skip links, keyboard users must Tab through every header element before reaching page content.',
+          srOutput: 'navigation "Skip links"\n\u251C\u2500\u2500 link "Skip to main content"\n\u251C\u2500\u2500 link "Skip to navigation"\n\u251C\u2500\u2500 link "Skip to search"\n\u251C\u2500\u2500 link "Skip to data catalog"\n\u2514\u2500\u2500 link "Skip to pipelines"',
+          onEnter() { document.querySelector('.skip-link')?.classList.add('skip-link--visible'); },
+          onLeave() { document.querySelector('.skip-link')?.classList.remove('skip-link--visible'); }
+        },
+        {
+          target: '.action-edit',
+          wcag: '4.1.2',
+          title: 'Icon Button with Accessible Name',
+          description: 'Every icon-only button has a descriptive aria-label so screen readers announce its purpose. The SVG icon is hidden from assistive tech with aria-hidden="true".',
+          impact: 'Without aria-label, screen readers announce just "button" \u2014 users have no idea what it does.',
+          srOutput: 'button "Edit customers_dim"\n     \u2193 without aria-label:\nbutton ""'
+        },
+        {
+          target: 'button[aria-disabled="true"][aria-label*="Cannot delete v_revenue"]',
+          wcag: '4.1.2',
+          title: 'Disabled Button with Reason',
+          description: 'This delete button uses aria-disabled="true" instead of the HTML disabled attribute. It stays in the tab order so screen reader users discover it, and its aria-label explains why it\u2019s disabled.',
+          impact: 'The native disabled attribute removes the element from tab order \u2014 screen reader users never know it exists or why they can\u2019t act.',
+          srOutput: 'button "Cannot delete v_revenue_monthly\n  \u2014 asset is protected by governance\n  policy" (dimmed)'
+        },
+        {
+          target: '.data-list__item',
+          wcag: '2.4.3',
+          title: 'Focus Trapping in Drawer',
+          description: 'Clicking this row opens a details drawer. Focus is immediately trapped inside \u2014 Tab cycles only through drawer controls (close button, tabs, tab content). Escape closes the drawer and returns focus to this row.',
+          impact: 'Without focus trapping, keyboard users Tab behind the overlay into invisible content with no way back.',
+          srOutput: 'dialog "customers_dim"\n\u251C\u2500\u2500 button "Close dialog"\n\u251C\u2500\u2500 tablist\n\u2502   \u251C\u2500\u2500 tab "General" (selected)\n\u2502   \u251C\u2500\u2500 tab "Properties"\n\u2502   \u2514\u2500\u2500 tab "People"\n\u2514\u2500\u2500 tabpanel "General"\n     \u2514\u2500\u2500 [content, focus trapped]'
+        },
+        {
+          target: '.action-edit',
+          wcag: '3.3.1',
+          title: 'Modal with Focus Management',
+          description: 'The edit modal traps focus, labels required fields with aria-required, and uses role="alert" to announce validation errors. On close, focus returns to the button that opened it.',
+          impact: 'Without focus return, closing a modal leaves the user at the top of the page \u2014 losing their place in a long document.',
+          srOutput: 'dialog "Edit asset"\n\u251C\u2500\u2500 textbox "Asset Name *" (required)\n\u251C\u2500\u2500 textbox "Description"\n\u251C\u2500\u2500 combobox "Owner *" (required)\n\u251C\u2500\u2500 textbox "Tags"\n\u251C\u2500\u2500 button "Cancel"\n\u2514\u2500\u2500 button "Save Changes"\nOn validation error:\n  alert "Asset name is required"'
+        },
+        {
+          target: '#live-region',
+          wcag: '4.1.3',
+          title: 'Live Region Announcements',
+          description: 'A hidden live region with aria-live="polite" silently feeds announcements to screen readers whenever the UI changes \u2014 modals open, tabs switch, landmarks are reached. Users never need to visually discover what happened.',
+          impact: 'Without live regions, screen reader users miss every dynamic UI update entirely.',
+          srOutput: 'status (live: polite)\nAnnounced:\n  "Edit dialog opened for customers_dim"\n  "General tab selected"\n  "Navigation landmark"\n  "Drawer closed"'
+        }
+      ];
+
+      function positionSpotlightAndCard(targetEl) {
+        const rect = targetEl.getBoundingClientRect();
+        const pad = 8;
+
+        // Position spotlight
+        spotlight.style.top = (rect.top - pad + window.scrollY) + 'px';
+        spotlight.style.left = (rect.left - pad) + 'px';
+        spotlight.style.width = (rect.width + pad * 2) + 'px';
+        spotlight.style.height = (rect.height + pad * 2) + 'px';
+
+        // Scroll target into view if needed
+        const viewTop = window.scrollY;
+        const viewBottom = viewTop + window.innerHeight;
+        const elTop = rect.top + window.scrollY;
+        const elBottom = elTop + rect.height;
+        if (elTop < viewTop + 60 || elBottom > viewBottom - 60) {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Reposition after scroll settles
+          setTimeout(() => {
+            const r = targetEl.getBoundingClientRect();
+            spotlight.style.top = (r.top - pad + window.scrollY) + 'px';
+            spotlight.style.left = (r.left - pad) + 'px';
+            spotlight.style.width = (r.width + pad * 2) + 'px';
+            spotlight.style.height = (r.height + pad * 2) + 'px';
+            positionCard(r);
+          }, 400);
+          return;
+        }
+
+        positionCard(rect);
+      }
+
+      function positionCard(rect) {
+        const cardW = Math.min(420, window.innerWidth - 32);
+        const cardH = card.offsetHeight || 400;
+        const gap = 16;
+
+        // Try right
+        if (rect.right + gap + cardW < window.innerWidth - 16) {
+          card.style.left = (rect.right + gap) + 'px';
+          card.style.top = Math.max(16, Math.min(rect.top, window.innerHeight - cardH - 16)) + 'px';
+          card.style.right = 'auto';
+          return;
+        }
+        // Try left
+        if (rect.left - gap - cardW > 16) {
+          card.style.left = (rect.left - gap - cardW) + 'px';
+          card.style.top = Math.max(16, Math.min(rect.top, window.innerHeight - cardH - 16)) + 'px';
+          card.style.right = 'auto';
+          return;
+        }
+        // Below
+        card.style.left = Math.max(16, Math.min(rect.left, window.innerWidth - cardW - 16)) + 'px';
+        card.style.top = Math.min(rect.bottom + gap, window.innerHeight - cardH - 16) + 'px';
+        card.style.right = 'auto';
+      }
+
+      function renderStep(index) {
+        const step = steps[index];
+        const targetEl = document.querySelector(step.target);
+        if (!targetEl) return;
+
+        // Leave previous step
+        if (steps[currentStep]?.onLeave) steps[currentStep].onLeave();
+        currentStep = index;
+        if (step.onEnter) step.onEnter();
+
+        // Update content
+        stepCounter.textContent = `${index + 1} / ${steps.length}`;
+        wcagTag.textContent = step.wcag;
+        titleEl.textContent = step.title;
+        descEl.textContent = step.description;
+        impactEl.textContent = step.impact;
+        srOutput.textContent = step.srOutput;
+
+        // Update buttons
+        prevBtn.style.display = index === 0 ? 'none' : '';
+        nextBtn.textContent = index === steps.length - 1 ? 'Finish' : 'Next';
+
+        // Update progress dots
+        progressEl.innerHTML = '';
+        for (let i = 0; i < steps.length; i++) {
+          const dot = document.createElement('span');
+          dot.className = 'wt-card__dot' + (i === index ? ' wt-card__dot--active' : '');
+          progressEl.appendChild(dot);
+        }
+
+        // Position
+        positionSpotlightAndCard(targetEl);
+
+        announce(`Step ${index + 1} of ${steps.length}: ${step.title}`);
+      }
+
+      function startWalkthrough() {
+        // Close any open panels
+        wcagPanel.setAttribute('aria-hidden', 'true');
+        wcagToggle.setAttribute('aria-expanded', 'false');
+
+        walkthroughActive = true;
+        overlay.setAttribute('aria-hidden', 'false');
+        overlay.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+
+        renderStep(0);
+        trapFocus(card);
+
+        // Focus the close button for keyboard users
+        requestAnimationFrame(() => closeBtn.focus());
+      }
+
+      function endWalkthrough() {
+        if (steps[currentStep]?.onLeave) steps[currentStep].onLeave();
+        walkthroughActive = false;
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.style.display = 'none';
+        document.body.style.overflow = '';
+        releaseFocus(card);
+        tourBtn.focus();
+        announce('Tour ended');
+      }
+
+      tourBtn.addEventListener('click', startWalkthrough);
+      closeBtn.addEventListener('click', endWalkthrough);
+
+      nextBtn.addEventListener('click', () => {
+        if (currentStep < steps.length - 1) {
+          renderStep(currentStep + 1);
+        } else {
+          endWalkthrough();
+        }
+      });
+
+      prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+          renderStep(currentStep - 1);
+        }
+      });
+
+      // Click on backdrop (not card or spotlight) closes
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) endWalkthrough();
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (!walkthroughActive) return;
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          e.stopPropagation();
+          endWalkthrough();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          if (currentStep < steps.length - 1) renderStep(currentStep + 1);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          if (currentStep > 0) renderStep(currentStep - 1);
+        }
+      }, true); // Capture phase to intercept before other handlers
+
+      // Reposition on resize
+      window.addEventListener('resize', () => {
+        if (!walkthroughActive) return;
+        const targetEl = document.querySelector(steps[currentStep].target);
+        if (targetEl) positionSpotlightAndCard(targetEl);
+      });
+    })();
+  </script>
+</body>
+</html>
