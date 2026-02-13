@@ -1153,6 +1153,13 @@
       bottom: 20px;
       left: 20px;
       z-index: 9999;
+      --color-accent: #3B5BB8;
+      --color-accent-hover: #2D4A9F;
+      --color-accent-subtle: rgba(59,91,184,0.09);
+      --color-success: #107C57;
+      --color-success-subtle: rgba(16,124,87,0.09);
+      --color-warning: #8A6100;
+      --color-warning-subtle: rgba(138,97,0,0.09);
     }
     .wcag-badge__trigger {
       display: flex;
@@ -1276,6 +1283,11 @@
       inset: 0;
       z-index: 3000;
       display: none;
+      --color-accent: #3B5BB8;
+      --color-accent-hover: #2D4A9F;
+      --color-accent-subtle: rgba(59,91,184,0.09);
+      --color-success: #107C57;
+      --color-warning: #8A6100;
     }
     .wt-overlay[aria-hidden="false"] { display: block; }
 
@@ -1302,7 +1314,7 @@
 
     .wt-card {
       position: fixed;
-      z-index: 3002;
+      z-index: 3003;
       width: 420px;
       max-width: calc(100vw - 32px);
       background: var(--color-surface-raised);
@@ -3142,6 +3154,14 @@
           onEnter() { document.querySelector('.skip-link')?.classList.add('skip-link--visible'); },
           onLeave() { document.querySelector('.skip-link')?.classList.remove('skip-link--visible'); }
         },
+         {
+          target: '.metric-card .has-tooltip',
+          wcag: '1.3.1',
+          title: 'Readable Tooltips',
+          description: 'Each info icon uses a <span> with role="tooltip" that appears on both hover and keyboard focus via :focus-within. The trigger button links to the tooltip text with aria-describedby, so screen readers announce the tooltip content automatically when the button receives focus — no hover required.',
+          impact: 'Without role="tooltip" and aria-describedby, tooltip text is only available on mouse hover — keyboard and screen reader users never see or hear the extra context.',
+          srOutput: 'button "About total items metric"\n  described by: "Count of all registered\n  items across projects"\n\n  role=tooltip ensures AT announces\n  the description on focus.'
+        },
         {
           target: '.action-edit',
           wcag: '4.1.2',
@@ -3160,27 +3180,41 @@
         },
         {
           target: '.data-list__item',
+          spotlightTarget: '#asset-drawer',
           wcag: '2.4.3',
           title: 'Focus Trapping in Drawer',
           description: 'Clicking this row opens a details drawer. Focus is immediately trapped inside \u2014 Tab cycles only through drawer controls (close button, tabs, tab content). Escape closes the drawer and returns focus to this row.',
           impact: 'Without focus trapping, keyboard users Tab behind the overlay into invisible content with no way back.',
+          onEnter() {
+            // Show drawer visually for context (without stealing focus from walkthrough)
+            const d = document.getElementById('asset-drawer');
+            const dOverlay = document.getElementById('drawer-overlay');
+            document.getElementById('drawer-title').textContent = 'Project Alpha';
+            document.getElementById('drawer-subtitle').textContent = 'Main workspace project';
+            switchTab('general');
+            dOverlay.setAttribute('aria-hidden', 'false');
+            d.setAttribute('aria-hidden', 'false');
+            d.style.display = 'flex';
+            // Lift above walkthrough spotlight overlay (z-index 3001)
+            d.style.zIndex = '3001';
+            dOverlay.style.zIndex = '3000';
+            requestAnimationFrame(() => {
+              dOverlay.classList.add('drawer-overlay--visible');
+              d.classList.add('drawer--visible');
+            });
+          },
+          onLeave() {
+            const d = document.getElementById('asset-drawer');
+            const dOverlay = document.getElementById('drawer-overlay');
+            dOverlay.classList.remove('drawer-overlay--visible');
+            d.classList.remove('drawer--visible');
+            dOverlay.setAttribute('aria-hidden', 'true');
+            d.setAttribute('aria-hidden', 'true');
+            d.style.display = 'none';
+            d.style.zIndex = '';
+            dOverlay.style.zIndex = '';
+          },
           srOutput: 'dialog "Project Alpha"\n\u251C\u2500\u2500 button "Close dialog"\n\u251C\u2500\u2500 tablist\n\u2502   \u251C\u2500\u2500 tab "General" (selected)\n\u2502   \u251C\u2500\u2500 tab "Properties"\n\u2502   \u2514\u2500\u2500 tab "People"\n\u2514\u2500\u2500 tabpanel "General"\n     \u2514\u2500\u2500 [content, focus trapped]'
-        },
-        {
-          target: '.action-edit',
-          wcag: '3.3.1',
-          title: 'Modal with Focus Management',
-          description: 'The edit modal traps focus, labels required fields with aria-required, and uses role="alert" to announce validation errors. On close, focus returns to the button that opened it.',
-          impact: 'Without focus return, closing a modal leaves the user at the top of the page \u2014 losing their place in a long document.',
-          srOutput: 'dialog "Edit Item"\n\u251C\u2500\u2500 textbox "Item Name *" (required)\n\u251C\u2500\u2500 textbox "Description"\n\u251C\u2500\u2500 combobox "Owner *" (required)\n\u251C\u2500\u2500 textbox "Tags"\n\u251C\u2500\u2500 button "Cancel"\n\u2514\u2500\u2500 button "Save Changes"\nOn validation error:\n  alert "Item name is required"'
-        },
-        {
-          target: '#live-region',
-          wcag: '4.1.3',
-          title: 'Live Region Announcements',
-          description: 'A hidden live region with aria-live="polite" silently feeds announcements to screen readers whenever the UI changes \u2014 modals open, tabs switch, landmarks are reached. Users never need to visually discover what happened.',
-          impact: 'Without live regions, screen reader users miss every dynamic UI update entirely.',
-          srOutput: 'status (live: polite)\nAnnounced:\n  "Edit dialog opened for Project Alpha"\n  "General tab selected"\n  "Navigation landmark"\n  "Drawer closed"'
         },
         {
           target: '.chart-area',
@@ -3189,12 +3223,72 @@
           description: 'The visual bar chart is wrapped in aria-hidden="true" so screen readers skip it entirely. Directly below, a semantically structured <table> with a descriptive <caption> provides the same data in a format screen readers can navigate row by row.',
           impact: 'Without a text alternative, screen reader users get no information from visual charts \u2014 the data is completely invisible to them.',
           srOutput: 'table "Weekly activity: completed vs pending"\n\u251C\u2500\u2500 row: Day | Completed | Pending\n\u251C\u2500\u2500 row: Monday | 88% | 6%\n\u251C\u2500\u2500 row: Tuesday | 92% | 4%\n\u251C\u2500\u2500 row: Wednesday | 85% | 10%\n\u251C\u2500\u2500 row: Thursday | 95% | 3%\n\u2514\u2500\u2500 row: Friday | 91% | 5%'
-        }
+        },
+        {
+          target: '.action-edit',
+          spotlightTarget: '#edit-modal',
+          wcag: '3.3.1',
+          title: 'Modal with Focus Management',
+          description: 'The edit modal traps focus, labels required fields with aria-required, and uses role="alert" to announce validation errors. On close, focus returns to the button that opened it.',
+          onEnter() {
+            // Show edit modal visually for context (without stealing focus from walkthrough)
+            const ov = document.getElementById('edit-modal-overlay');
+            const modal = document.getElementById('edit-modal');
+            ov.setAttribute('aria-hidden', 'false');
+            // Hide the full-screen backdrop so it doesn't cover the wt-card,
+            // and lift only the modal dialog above the spotlight (3001)
+            ov.style.background = 'transparent';
+            ov.style.backdropFilter = 'none';
+            ov.style.zIndex = '3002';
+            ov.style.pointerEvents = 'none';
+            modal.style.zIndex = '3002';
+            modal.style.pointerEvents = 'none';
+          },
+          onLeave() {
+            const ov = document.getElementById('edit-modal-overlay');
+            const modal = document.getElementById('edit-modal');
+            ov.setAttribute('aria-hidden', 'true');
+            ov.style.background = '';
+            ov.style.backdropFilter = '';
+            ov.style.zIndex = '';
+            ov.style.pointerEvents = '';
+            modal.style.zIndex = '';
+            modal.style.pointerEvents = '';
+          },
+          impact: 'Without focus return, closing a modal leaves the user at the top of the page \u2014 losing their place in a long document.',
+          srOutput: 'dialog "Edit Item"\n\u251C\u2500\u2500 textbox "Item Name *" (required)\n\u251C\u2500\u2500 textbox "Description"\n\u251C\u2500\u2500 combobox "Owner *" (required)\n\u251C\u2500\u2500 textbox "Tags"\n\u251C\u2500\u2500 button "Cancel"\n\u2514\u2500\u2500 button "Save Changes"\nOn validation error:\n  alert "Item name is required"'
+        },
+        /*{
+          target: '#live-region',
+          wcag: '4.1.3',
+          title: 'Live Region Announcements',
+          description: 'A hidden live region with aria-live="polite" silently feeds announcements to screen readers whenever the UI changes \u2014 modals open, tabs switch, landmarks are reached. Users never need to visually discover what happened.',
+          impact: 'Without live regions, screen reader users miss every dynamic UI update entirely.',
+          srOutput: 'status (live: polite)\nAnnounced:\n  "Edit dialog opened for Project Alpha"\n  "General tab selected"\n  "Navigation landmark"\n  "Drawer closed"'
+        },*/
+       
       ];
 
       function positionSpotlightAndCard(targetEl) {
         const rect = targetEl.getBoundingClientRect();
         const pad = 8;
+
+        // If target is off-screen (e.g. sr-only at left:-9999px), hide
+        // the spotlight and center the card instead
+        const offScreen = rect.right < 0 || rect.left > window.innerWidth
+          || rect.bottom < 0 || rect.top > window.innerHeight;
+        if (offScreen) {
+          spotlight.style.top = '-9999px';
+          spotlight.style.left = '-9999px';
+          spotlight.style.width = '0';
+          spotlight.style.height = '0';
+          const cardW = Math.min(420, window.innerWidth - 32);
+          const cardH = card.offsetHeight || 400;
+          card.style.left = ((window.innerWidth - cardW) / 2) + 'px';
+          card.style.top = ((window.innerHeight - cardH) / 2) + 'px';
+          card.style.right = 'auto';
+          return;
+        }
 
         // Position spotlight
         spotlight.style.top = (rect.top - pad + window.scrollY) + 'px';
@@ -3279,8 +3373,16 @@
           progressEl.appendChild(dot);
         }
 
-        // Position
+        // Position spotlight on the target (or spotlightTarget after animation)
         positionSpotlightAndCard(targetEl);
+
+        if (step.spotlightTarget) {
+          // Re-position spotlight on the actual UI element after it animates in
+          setTimeout(() => {
+            const spotEl = document.querySelector(step.spotlightTarget);
+            if (spotEl) positionSpotlightAndCard(spotEl);
+          }, 350);
+        }
 
         announce(`Step ${index + 1} of ${steps.length}: ${step.title}`);
       }
