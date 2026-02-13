@@ -3181,6 +3181,14 @@
           description: 'A hidden live region with aria-live="polite" silently feeds announcements to screen readers whenever the UI changes \u2014 modals open, tabs switch, landmarks are reached. Users never need to visually discover what happened.',
           impact: 'Without live regions, screen reader users miss every dynamic UI update entirely.',
           srOutput: 'status (live: polite)\nAnnounced:\n  "Edit dialog opened for Project Alpha"\n  "General tab selected"\n  "Navigation landmark"\n  "Drawer closed"'
+        },
+        {
+          target: '.chart-area',
+          wcag: '1.1.1',
+          title: 'Alternative Content for Charts',
+          description: 'The visual bar chart is wrapped in aria-hidden="true" so screen readers skip it entirely. Directly below, a semantically structured <table> with a descriptive <caption> provides the same data in a format screen readers can navigate row by row.',
+          impact: 'Without a text alternative, screen reader users get no information from visual charts \u2014 the data is completely invisible to them.',
+          srOutput: 'table "Weekly activity: completed vs pending"\n\u251C\u2500\u2500 row: Day | Completed | Pending\n\u251C\u2500\u2500 row: Monday | 88% | 6%\n\u251C\u2500\u2500 row: Tuesday | 92% | 4%\n\u251C\u2500\u2500 row: Wednesday | 85% | 10%\n\u251C\u2500\u2500 row: Thursday | 95% | 3%\n\u2514\u2500\u2500 row: Friday | 91% | 5%'
         }
       ];
 
@@ -3261,7 +3269,7 @@
 
         // Update buttons
         prevBtn.style.display = index === 0 ? 'none' : '';
-        nextBtn.textContent = index === steps.length - 1 ? 'Finish' : 'Next';
+        nextBtn.textContent = index === steps.length - 1 ? 'Close' : 'Next';
 
         // Update progress dots
         progressEl.innerHTML = '';
