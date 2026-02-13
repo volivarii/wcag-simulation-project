@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WCAG Demo — Data Catalog | WCAG 2.1 AA Simulation</title>
-  <meta name="description" content="A WCAG 2.1 AA compliant SaaS data catalog simulation demonstrating accessibility best practices.">
+  <title>Dashboard | WCAG 2.1 AA</title>
+  <meta name="description" content="A WCAG 2.1 AA compliant wireframe dashboard template demonstrating accessibility best practices.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
@@ -12,33 +12,33 @@
        CSS CUSTOM PROPERTIES
        ======================================== */
     :root {
-      --color-bg: #F4F5F7;
+      --color-bg: #F2F2F2;
       --color-surface: #FFFFFF;
       --color-surface-raised: #FFFFFF;
-      --color-surface-hover: #F0F1F4;
-      --color-border: #DFE1E6;
-      --color-border-focus: #3B5BB8; /* Updated to match new accent color */
-      --color-text-primary: #1A1D2B;
-      --color-text-secondary: #5E6278;
-      --color-text-muted: #6B7488; /* Changed from #8993A4 to meet WCAG AA 4.5:1 contrast */
-      --color-accent: #3B5BB8; /* Darkened from #4C6FD1 for WCAG AA 4.5:1 contrast */
-      --color-accent-hover: #2D4A9F;
-      --color-accent-subtle: rgba(59,91,184,0.09);
-      --color-success: #107C57; /* Darkened from #1B9E6D for WCAG AA 4.5:1 contrast */
-      --color-success-subtle: rgba(16,124,87,0.09);
-      --color-warning: #8A6100; /* Darkened from #C08C17 for WCAG AA 4.5:1 contrast */
-      --color-warning-subtle: rgba(138,97,0,0.09);
-      --color-danger: #C1313F; /* Darkened from #D94452 for WCAG AA 4.5:1 contrast */
-      --color-danger-subtle: rgba(193,49,63,0.09);
-      --color-danger-hover: #A72838;
-      --font-body: 'Roboto', sans-serif;
+      --color-surface-hover: #EBEBEB;
+      --color-border: #D4D4D4;
+      --color-border-focus: #4A4A4A;
+      --color-text-primary: #1A1A1A;
+      --color-text-secondary: #525252;
+      --color-text-muted: #6B6B6B; /* 4.7:1 on white — meets WCAG AA */
+      --color-accent: #4A4A4A; /* 9.7:1 on white */
+      --color-accent-hover: #333333;
+      --color-accent-subtle: rgba(74,74,74,0.08);
+      --color-success: #3D3D3D; /* 10.9:1 on white */
+      --color-success-subtle: rgba(61,61,61,0.08);
+      --color-warning: #5C5C5C; /* 5.9:1 on white */
+      --color-warning-subtle: rgba(92,92,92,0.08);
+      --color-danger: #757575; /* 4.6:1 on white */
+      --color-danger-subtle: rgba(117,117,117,0.08);
+      --color-danger-hover: #636363;
+      --font-body: 'DM Sans', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --radius-sm: 6px;
       --radius-md: 10px;
       --radius-lg: 14px;
       --shadow-md: 0 4px 24px rgba(0,0,0,0.08);
       --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
-      --focus-ring: 0 0 0 3px rgba(76,111,209,0.4);
+      --focus-ring: 0 0 0 3px rgba(74,74,74,0.35);
       --transition-fast: 150ms ease;
       --transition-med: 250ms ease;
       --nav-width: 240px;
@@ -151,7 +151,7 @@
     }
     .app-header__logo {
       width: 28px; height: 28px;
-      background: linear-gradient(135deg, var(--color-accent), #7C5CBF);
+      background: linear-gradient(135deg, #4A4A4A, #6B6B6B);
       border-radius: var(--radius-sm);
       display: flex; align-items: center; justify-content: center;
     }
@@ -231,7 +231,7 @@
     .avatar-btn {
       width: 32px; height: 32px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #4C6FD1, #7C5CBF);
+      background: linear-gradient(135deg, #525252, #6B6B6B);
       border: none;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
@@ -427,7 +427,7 @@
     .tooltip {
       position: absolute;
       padding: 6px 12px;
-      background: #1A1D2B;
+      background: #1A1A1A;
       color: #FFFFFF;
       font-size: 12px;
       font-weight: 500;
@@ -459,7 +459,7 @@
       right: auto;
       transform: translateX(-50%);
       border: 5px solid transparent;
-      border-top-color: #1A1D2B;
+      border-top-color: #1A1A1A;
     }
 
     .tooltip--bottom {
@@ -478,7 +478,7 @@
       right: auto;
       transform: translateX(-50%);
       border: 5px solid transparent;
-      border-bottom-color: #1A1D2B;
+      border-bottom-color: #1A1A1A;
     }
 
     .tooltip--left {
@@ -497,7 +497,7 @@
       bottom: auto;
       transform: translateY(-50%);
       border: 5px solid transparent;
-      border-left-color: #1A1D2B;
+      border-left-color: #1A1A1A;
     }
 
     .tooltip--right {
@@ -516,7 +516,7 @@
       bottom: auto;
       transform: translateY(-50%);
       border: 5px solid transparent;
-      border-right-color: #1A1D2B;
+      border-right-color: #1A1A1A;
     }
 
     .has-tooltip:hover .tooltip,
@@ -923,7 +923,7 @@
     .form-input {
       width: 100%;
       padding: 9px 14px;
-      background: #F7F8FA;
+      background: #F5F5F5;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-sm);
       color: var(--color-text-primary);
@@ -945,7 +945,7 @@
     .form-select {
       width: 100%;
       padding: 9px 14px;
-      background: #F7F8FA;
+      background: #F5F5F5;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-sm);
       color: var(--color-text-primary);
@@ -966,12 +966,12 @@
     .form-input--error,
     .form-select--error {
       border-color: var(--color-danger);
-      background: #FEF5F5;
+      background: #F5F5F5;
     }
     .form-input--error:focus-visible,
     .form-select--error:focus-visible {
       border-color: var(--color-danger);
-      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+      box-shadow: 0 0 0 3px rgba(117, 117, 117, 0.2);
     }
     .form-error {
       margin-top: 4px;
@@ -1380,7 +1380,7 @@
     }
 
     .wt-card__sr {
-      background: #1A1D2B;
+      background: #1A1A1A;
       border-radius: var(--radius-sm);
       padding: 12px;
       margin-bottom: 4px;
@@ -1390,7 +1390,7 @@
       font-family: var(--font-mono);
       font-size: 10px;
       font-weight: 600;
-      color: #6B7488;
+      color: #6B6B6B;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 6px;
@@ -1399,7 +1399,7 @@
       font-family: var(--font-mono);
       font-size: 11.5px;
       line-height: 1.55;
-      color: #D4E0FF;
+      color: #D0D0D0;
       white-space: pre;
       margin: 0;
     }
@@ -1500,8 +1500,8 @@
       animation: landmarkPulse 600ms ease;
     }
     @keyframes landmarkPulse {
-      0% { box-shadow: 0 0 0 0 rgba(76,111,209,0.4); }
-      50% { box-shadow: 0 0 0 4px rgba(76,111,209,0.2); }
+      0% { box-shadow: 0 0 0 0 rgba(74,74,74,0.4); }
+      50% { box-shadow: 0 0 0 4px rgba(74,74,74,0.2); }
       100% { box-shadow: none; }
     }
   </style>
@@ -1517,8 +1517,8 @@
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <a href="#main-nav" class="skip-link">Skip to navigation</a>
     <a href="#search-input" class="skip-link">Skip to search</a>
-    <a href="#catalog-section" class="skip-link">Skip to data catalog</a>
-    <a href="#pipeline-section" class="skip-link">Skip to pipelines</a>
+    <a href="#catalog-section" class="skip-link">Skip to projects</a>
+    <a href="#pipeline-section" class="skip-link">Skip to tasks</a>
   </nav>
 
   <!-- Live region for screen reader announcements -->
@@ -1537,13 +1537,13 @@
         <div class="app-header__logo" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="white  " stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
-        <span class="app-header__title">WCAG Demo</span>
+        <span class="app-header__title">WCAG 2.1 AA Demo</span>
       </div>
 
       <div class="header-search" role="search" aria-label="Global search">
         <svg class="header-search__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <label for="search-input" class="sr-only">Search data assets, tables, or pipelines</label>
-        <input type="search" id="search-input" class="header-search__input" placeholder="Search assets, tables…" autocomplete="off">
+        <label for="search-input" class="sr-only">Search items, projects, or tasks</label>
+        <input type="search" id="search-input" class="header-search__input" placeholder="Search items…" autocomplete="off">
         <kbd class="header-search__kbd" aria-hidden="true">⌘K</kbd>
       </div>
 
@@ -1559,22 +1559,22 @@
             <div class="dropdown__header">Notifications</div>
             <button class="dropdown__item dropdown__item--notification" role="menuitem" tabindex="-1">
               <div class="notification__content">
-                <strong>Pipeline Failed</strong>
-                <p>ETL — Customers pipeline failed at step 3</p>
+                <strong>Task Failed</strong>
+                <p>Scheduled task "Data Import" failed at step 3</p>
                 <span class="notification__time">5 minutes ago</span>
               </div>
             </button>
             <button class="dropdown__item dropdown__item--notification" role="menuitem" tabindex="-1">
               <div class="notification__content">
-                <strong>Data Quality Alert</strong>
-                <p>customers_dim has 12 validation errors</p>
+                <strong>Quality Alert</strong>
+                <p>Project Alpha has 12 validation errors</p>
                 <span class="notification__time">1 hour ago</span>
               </div>
             </button>
             <button class="dropdown__item dropdown__item--notification" role="menuitem" tabindex="-1">
               <div class="notification__content">
                 <strong>Access Request</strong>
-                <p>Sarah Kim requested access to orders_fact</p>
+                <p>Jane Smith requested access to Project Beta</p>
                 <span class="notification__time">2 hours ago</span>
               </div>
             </button>
@@ -1616,11 +1616,11 @@
 
         <!-- User Menu Dropdown -->
         <div class="dropdown">
-          <button class="avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="User menu — Vincent Olivari" id="user-menu-btn" type="button">VO</button>
+          <button class="avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="User menu — Alex Morgan" id="user-menu-btn" type="button">AM</button>
           <div class="dropdown__menu dropdown__menu--right" role="menu" aria-labelledby="user-menu-btn" aria-hidden="true" id="user-dropdown">
             <div class="dropdown__header">
-              <strong>Vincent Olivari</strong>
-              <p style="font-size: 12px; color: var(--color-text-muted); margin: 2px 0 0;">vincent@wcag.demo</p>
+              <strong>Alex Morgan</strong>
+              <p style="font-size: 12px; color: var(--color-text-muted); margin: 2px 0 0;">alex@example.com</p>
             </div>
             <div class="dropdown__sep" role="separator"></div>
             <button class="dropdown__item" role="menuitem" tabindex="-1">
@@ -1650,33 +1650,33 @@
          WCAG 1.3.1, 4.1.2: role, aria-current
          ========================================== -->
     <nav class="app-nav" id="main-nav" aria-label="Main navigation">
-      <span class="nav-section-label" id="nav-label-main">Platform</span>
+      <span class="nav-section-label" id="nav-label-main">Workspace</span>
       <a href="#" class="nav-item" aria-current="page">
         <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Overview
+        Dashboard
       </a>
       <a href="#catalog-section" class="nav-item">
         <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-        Data Catalog
+        Projects
         <span class="nav-item__badge">24</span>
       </a>
       <a href="#pipeline-section" class="nav-item">
         <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Pipelines
+        Tasks
       </a>
       <a href="#" class="nav-item">
         <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Governance
+        Reports
       </a>
       <a href="#" class="nav-item">
         <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        Discussions
+        Messages
       </a>
 
       <span class="nav-section-label" id="nav-label-admin">Administration</span>
       <a href="#" class="nav-item">
         <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        Users &amp; Teams
+        Team
       </a>
       <a href="#" class="nav-item">
         <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -1687,7 +1687,7 @@
 
       <a href="#" class="nav-item">
         <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        What's new
+        Help
       </a>
     </nav>
 
@@ -1697,8 +1697,8 @@
     <main class="app-main" id="main-content" aria-label="Main content">
       <div class="main-header">
         <div>
-          <h1 class="main-header__title">Platform Overview</h1>
-          <p class="main-header__subtitle">Monitor your data assets, quality, and pipeline health.</p>
+          <h1 class="main-header__title">Dashboard Overview</h1>
+          <p class="main-header__subtitle">Monitor your projects, tasks, and team activity.</p>
         </div>
         <div class="main-header__actions">
           <button class="btn btn--secondary" type="button">
@@ -1707,7 +1707,7 @@
           </button>
           <button class="btn btn--primary" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            New Asset
+            New Item
           </button>
         </div>
       </div>
@@ -1716,14 +1716,14 @@
            METRICS — aria-label for each card
            ========================================== -->
       <section class="metrics-grid" aria-label="Key metrics">
-        <article class="metric-card" aria-label="Total data assets: 1,247">
+        <article class="metric-card" aria-label="Total items: 1,247">
           <div class="metric-card__header">
-            <span class="metric-card__label">Total Assets</span>
+            <span class="metric-card__label">Total Items</span>
             <div class="has-tooltip">
-              <button class="icon-btn" aria-label="About total assets metric" aria-describedby="tt-assets" type="button">
+              <button class="icon-btn" aria-label="About total items metric" aria-describedby="tt-assets" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
               </button>
-              <span class="tooltip" role="tooltip" id="tt-assets">Count of all registered tables, views, and datasets</span>
+              <span class="tooltip" role="tooltip" id="tt-assets">Count of all registered items across projects</span>
             </div>
           </div>
           <div class="metric-card__value">1,247</div>
@@ -1736,14 +1736,14 @@
           </div>
         </article>
 
-        <article class="metric-card" aria-label="Data quality score: 94.2%">
+        <article class="metric-card" aria-label="Completion rate: 94.2%">
           <div class="metric-card__header">
-            <span class="metric-card__label">Quality Score</span>
+            <span class="metric-card__label">Completion Rate</span>
             <div class="has-tooltip">
-              <button class="icon-btn" aria-label="About quality score metric" aria-describedby="tt-quality" type="button">
+              <button class="icon-btn" aria-label="About completion rate metric" aria-describedby="tt-quality" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
               </button>
-              <span class="tooltip" role="tooltip" id="tt-quality">Average data quality score across all monitored assets</span>
+              <span class="tooltip" role="tooltip" id="tt-quality">Average completion rate across all active projects</span>
             </div>
           </div>
           <div class="metric-card__value">94.2%</div>
@@ -1756,14 +1756,14 @@
           </div>
         </article>
 
-        <article class="metric-card" aria-label="Active pipelines: 38">
+        <article class="metric-card" aria-label="Active tasks: 38">
           <div class="metric-card__header">
-            <span class="metric-card__label">Active Pipelines</span>
+            <span class="metric-card__label">Active Tasks</span>
             <div class="has-tooltip">
-              <button class="icon-btn" aria-label="About active pipelines metric" aria-describedby="tt-pipelines" type="button">
+              <button class="icon-btn" aria-label="About active tasks metric" aria-describedby="tt-pipelines" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
               </button>
-              <span class="tooltip" role="tooltip" id="tt-pipelines">Number of currently running data pipelines</span>
+              <span class="tooltip" role="tooltip" id="tt-pipelines">Number of tasks currently in progress</span>
             </div>
           </div>
           <div class="metric-card__value">38</div>
@@ -1776,14 +1776,14 @@
           </div>
         </article>
 
-        <article class="metric-card" aria-label="Alerts this week: 7">
+        <article class="metric-card" aria-label="Open issues: 7">
           <div class="metric-card__header">
-            <span class="metric-card__label">Alerts</span>
+            <span class="metric-card__label">Open Issues</span>
             <div class="has-tooltip">
-              <button class="icon-btn" aria-label="About alerts metric" aria-describedby="tt-alerts" type="button">
+              <button class="icon-btn" aria-label="About open issues metric" aria-describedby="tt-alerts" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
               </button>
-              <span class="tooltip" role="tooltip" id="tt-alerts">Data quality and pipeline alerts triggered this week</span>
+              <span class="tooltip" role="tooltip" id="tt-alerts">Issues requiring attention this week</span>
             </div>
           </div>
           <div class="metric-card__value">7</div>
@@ -1798,38 +1798,38 @@
       </section>
 
       <!-- ==========================================
-           DATA CATALOG SECTION
+           PROJECTS SECTION
            ========================================== -->
       <section class="section" id="catalog-section" aria-labelledby="catalog-heading">
         <div class="section__header">
-          <h2 class="section__title" id="catalog-heading">Data Catalog</h2>
+          <h2 class="section__title" id="catalog-heading">Projects</h2>
           <div class="dropdown has-tooltip">
-            <button class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Filter catalog assets" aria-describedby="tt-filter" id="filter-menu-btn" type="button">
+            <button class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Filter project items" aria-describedby="tt-filter" id="filter-menu-btn" type="button">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
             </button>
-            <span class="tooltip" role="tooltip" id="tt-filter">Filter assets</span>
+            <span class="tooltip" role="tooltip" id="tt-filter">Filter items</span>
             <div class="dropdown__menu dropdown__menu--filter" role="menu" aria-labelledby="filter-menu-btn" aria-hidden="true" id="filter-dropdown">
-              <div class="dropdown__header">Filter Assets</div>
+              <div class="dropdown__header">Filter Items</div>
               <button class="dropdown__item" role="menuitem" tabindex="-1">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-                Tables Only
+                Documents Only
               </button>
               <button class="dropdown__item" role="menuitem" tabindex="-1">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                Views Only
+                Dashboards Only
               </button>
               <button class="dropdown__item" role="menuitem" tabindex="-1">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                Pipelines Only
+                Tasks Only
               </button>
               <div class="dropdown__sep" role="separator"></div>
               <button class="dropdown__item" role="menuitem" tabindex="-1">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Verified Assets
+                Approved Items
               </button>
               <button class="dropdown__item" role="menuitem" tabindex="-1">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                Contains PII
+                Flagged Items
               </button>
               <div class="dropdown__sep" role="separator"></div>
               <button class="dropdown__item" role="menuitem" tabindex="-1">
@@ -1843,16 +1843,16 @@
         <div class="widget">
           <div class="widget__header">
             <h3 class="widget__title">
-              Recent Assets
+              Recent Items
               <div class="has-tooltip" style="display:inline-flex">
-                <button class="icon-btn" aria-label="About recent assets" aria-describedby="tt-recent" type="button" style="width:24px;height:24px;">
+                <button class="icon-btn" aria-label="About recent items" aria-describedby="tt-recent" type="button" style="width:24px;height:24px;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                 </button>
-                <span class="tooltip" role="tooltip" id="tt-recent">Assets modified in the last 7 days</span>
+                <span class="tooltip" role="tooltip" id="tt-recent">Items modified in the last 7 days</span>
               </div>
             </h3>
             <div class="dropdown">
-              <button class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="More actions for recent assets" id="catalog-menu-btn" type="button">
+              <button class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="More actions for recent items" id="catalog-menu-btn" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
               </button>
               <div class="dropdown__menu" role="menu" aria-labelledby="catalog-menu-btn" aria-hidden="true" id="catalog-dropdown">
@@ -1862,7 +1862,7 @@
                 </button>
                 <button class="dropdown__item" role="menuitem" tabindex="-1">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                  View lineage
+                  View history
                 </button>
                 <div class="dropdown__sep" role="separator"></div>
                 <button class="dropdown__item dropdown__item--danger" role="menuitem" tabindex="-1">
@@ -1872,112 +1872,112 @@
               </div>
             </div>
           </div>
-          <ul class="data-list" role="list" aria-label="Data catalog assets">
-            <li class="data-list__item" role="listitem" tabindex="0" data-asset="customers_dim" aria-label="customers_dim table, PostgreSQL, quality verified">
+          <ul class="data-list" role="list" aria-label="Project items">
+            <li class="data-list__item" role="listitem" tabindex="0" data-asset="project_alpha" aria-label="Project Alpha, document, approved">
               <div class="data-list__icon data-list__icon--table" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
               </div>
               <div class="data-list__info">
-                <span class="data-list__name">customers_dim</span>
-                <span class="data-list__meta">PostgreSQL · 1.2M rows · Updated 2h ago</span>
+                <span class="data-list__name">Project Alpha</span>
+                <span class="data-list__meta">Document · 1,247 records · Updated 2h ago</span>
               </div>
               <div class="data-list__tags">
-                <span class="tag tag--quality">Verified</span>
-                <span class="tag tag--pii">PII</span>
+                <span class="tag tag--quality">Approved</span>
+                <span class="tag tag--pii">Flagged</span>
               </div>
               <div class="data-list__actions">
                 <div class="has-tooltip">
-                  <button class="icon-btn action-edit" aria-label="Edit customers_dim" type="button" data-asset="customers_dim">
+                  <button class="icon-btn action-edit" aria-label="Edit Project Alpha" type="button" data-asset="project_alpha">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   </button>
-                  <span class="tooltip" role="tooltip">Edit asset</span>
+                  <span class="tooltip" role="tooltip">Edit item</span>
                 </div>
                 <div class="has-tooltip">
-                  <button class="icon-btn action-delete" aria-label="Delete customers_dim" type="button" data-asset="customers_dim">
+                  <button class="icon-btn action-delete" aria-label="Delete Project Alpha" type="button" data-asset="project_alpha">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                   </button>
-                  <span class="tooltip" role="tooltip">Delete asset</span>
+                  <span class="tooltip" role="tooltip">Delete item</span>
                 </div>
               </div>
             </li>
-            <li class="data-list__item" role="listitem" tabindex="0" data-asset="orders_fact" aria-label="orders_fact table, Snowflake, quality verified">
+            <li class="data-list__item" role="listitem" tabindex="0" data-asset="project_beta" aria-label="Project Beta, document, approved">
               <div class="data-list__icon data-list__icon--table" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
               </div>
               <div class="data-list__info">
-                <span class="data-list__name">orders_fact</span>
-                <span class="data-list__meta">Snowflake · 8.4M rows · Updated 30m ago</span>
+                <span class="data-list__name">Project Beta</span>
+                <span class="data-list__meta">Document · 8,400 records · Updated 30m ago</span>
               </div>
               <div class="data-list__tags">
-                <span class="tag tag--quality">Verified</span>
-                <span class="tag tag--source">Warehouse</span>
+                <span class="tag tag--quality">Approved</span>
+                <span class="tag tag--source">Internal</span>
               </div>
               <div class="data-list__actions">
                 <div class="has-tooltip">
-                  <button class="icon-btn action-edit" aria-label="Edit orders_fact" type="button" data-asset="orders_fact">
+                  <button class="icon-btn action-edit" aria-label="Edit Project Beta" type="button" data-asset="project_beta">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   </button>
-                  <span class="tooltip" role="tooltip">Edit asset</span>
+                  <span class="tooltip" role="tooltip">Edit item</span>
                 </div>
                 <div class="has-tooltip">
-                  <button class="icon-btn action-delete" aria-label="Delete orders_fact" type="button" data-asset="orders_fact">
+                  <button class="icon-btn action-delete" aria-label="Delete Project Beta" type="button" data-asset="project_beta">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                   </button>
-                  <span class="tooltip" role="tooltip">Delete asset</span>
+                  <span class="tooltip" role="tooltip">Delete item</span>
                 </div>
               </div>
             </li>
-            <li class="data-list__item" role="listitem" tabindex="0" data-asset="v_revenue_monthly" aria-label="v_revenue_monthly view, Snowflake">
+            <li class="data-list__item" role="listitem" tabindex="0" data-asset="report_monthly" aria-label="Monthly Report, dashboard">
               <div class="data-list__icon data-list__icon--view" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </div>
               <div class="data-list__info">
-                <span class="data-list__name">v_revenue_monthly</span>
-                <span class="data-list__meta">Snowflake · View · Updated 1d ago</span>
+                <span class="data-list__name">Monthly Report</span>
+                <span class="data-list__meta">Dashboard · Summary view · Updated 1d ago</span>
               </div>
               <div class="data-list__tags">
-                <span class="tag tag--source">Finance</span>
+                <span class="tag tag--source">Analytics</span>
               </div>
               <div class="data-list__actions">
                 <div class="has-tooltip">
-                  <button class="icon-btn action-edit" aria-label="Edit v_revenue_monthly" type="button" data-asset="v_revenue_monthly">
+                  <button class="icon-btn action-edit" aria-label="Edit Monthly Report" type="button" data-asset="report_monthly">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   </button>
-                  <span class="tooltip" role="tooltip">Edit asset</span>
+                  <span class="tooltip" role="tooltip">Edit item</span>
                 </div>
                 <!-- Disabled delete: demonstrating disabled state best practice -->
                 <div class="has-tooltip">
-                  <button class="icon-btn" aria-disabled="true" aria-label="Cannot delete v_revenue_monthly — asset is protected by governance policy" title="Protected by governance policy" type="button" tabindex="0">
+                  <button class="icon-btn" aria-disabled="true" aria-label="Cannot delete Monthly Report — item is protected by admin policy" title="Protected by admin policy" type="button" tabindex="0">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                   </button>
                   <span class="tooltip" role="tooltip">Protected — cannot delete</span>
                 </div>
               </div>
             </li>
-            <li class="data-list__item" role="listitem" tabindex="0" data-asset="user_events_raw" aria-label="user_events_raw table, BigQuery, contains PII">
+            <li class="data-list__item" role="listitem" tabindex="0" data-asset="project_gamma" aria-label="Project Gamma, document, flagged">
               <div class="data-list__icon data-list__icon--table" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
               </div>
               <div class="data-list__info">
-                <span class="data-list__name">user_events_raw</span>
-                <span class="data-list__meta">BigQuery · 42M rows · Updated 5m ago</span>
+                <span class="data-list__name">Project Gamma</span>
+                <span class="data-list__meta">Document · 42,000 records · Updated 5m ago</span>
               </div>
               <div class="data-list__tags">
-                <span class="tag tag--pii">PII</span>
-                <span class="tag tag--source">Streaming</span>
+                <span class="tag tag--pii">Flagged</span>
+                <span class="tag tag--source">External</span>
               </div>
               <div class="data-list__actions">
                 <div class="has-tooltip">
-                  <button class="icon-btn action-edit" aria-label="Edit user_events_raw" type="button" data-asset="user_events_raw">
+                  <button class="icon-btn action-edit" aria-label="Edit Project Gamma" type="button" data-asset="project_gamma">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   </button>
-                  <span class="tooltip" role="tooltip">Edit asset</span>
+                  <span class="tooltip" role="tooltip">Edit item</span>
                 </div>
                 <div class="has-tooltip">
-                  <button class="icon-btn action-delete" aria-label="Delete user_events_raw" type="button" data-asset="user_events_raw">
+                  <button class="icon-btn action-delete" aria-label="Delete Project Gamma" type="button" data-asset="project_gamma">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                   </button>
-                  <span class="tooltip" role="tooltip">Delete asset</span>
+                  <span class="tooltip" role="tooltip">Delete item</span>
                 </div>
               </div>
             </li>
@@ -1991,45 +1991,45 @@
       <div class="two-col" id="pipeline-section">
         <section class="section" aria-labelledby="pipeline-heading">
           <div class="section__header">
-            <h2 class="section__title" id="pipeline-heading">Pipelines</h2>
+            <h2 class="section__title" id="pipeline-heading">Tasks</h2>
           </div>
           <div class="widget">
             <div class="widget__header">
-              <h3 class="widget__title">Recent Runs</h3>
+              <h3 class="widget__title">Recent Activity</h3>
             </div>
-            <ul class="data-list" role="list" aria-label="Pipeline runs">
-              <li class="data-list__item" role="listitem" tabindex="0" data-asset="etl_customers" aria-label="ETL Customers pipeline, succeeded">
+            <ul class="data-list" role="list" aria-label="Recent task activity">
+              <li class="data-list__item" role="listitem" tabindex="0" data-asset="task_import" aria-label="Data Import task, completed">
                 <div class="data-list__icon data-list__icon--pipeline" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                 </div>
                 <div class="data-list__info">
-                  <span class="data-list__name">ETL — Customers</span>
+                  <span class="data-list__name">Data Import</span>
                   <span class="data-list__meta">Ran 15m ago · 2m 34s</span>
                 </div>
                 <div class="data-list__tags">
-                  <span class="tag tag--quality">Success</span>
+                  <span class="tag tag--quality">Completed</span>
                 </div>
                 <div class="data-list__actions">
                   <div class="has-tooltip">
-                    <button class="icon-btn action-edit" aria-label="Edit ETL Customers pipeline" type="button" data-asset="etl_customers">
+                    <button class="icon-btn action-edit" aria-label="Edit Data Import task" type="button" data-asset="task_import">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
-                    <span class="tooltip" role="tooltip">Edit pipeline</span>
+                    <span class="tooltip" role="tooltip">Edit task</span>
                   </div>
                   <div class="has-tooltip">
-                    <button class="icon-btn action-delete" aria-label="Delete ETL Customers pipeline" type="button" data-asset="etl_customers">
+                    <button class="icon-btn action-delete" aria-label="Delete Data Import task" type="button" data-asset="task_import">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                     </button>
-                    <span class="tooltip" role="tooltip">Delete pipeline</span>
+                    <span class="tooltip" role="tooltip">Delete task</span>
                   </div>
                 </div>
               </li>
-              <li class="data-list__item" role="listitem" tabindex="0" data-asset="sync_analytics" aria-label="Sync Analytics pipeline, failed">
+              <li class="data-list__item" role="listitem" tabindex="0" data-asset="task_sync" aria-label="Report Sync task, failed">
                 <div class="data-list__icon data-list__icon--pipeline" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                 </div>
                 <div class="data-list__info">
-                  <span class="data-list__name">Sync — Analytics</span>
+                  <span class="data-list__name">Report Sync</span>
                   <span class="data-list__meta">Ran 1h ago · Failed at step 3</span>
                 </div>
                 <div class="data-list__tags">
@@ -2037,25 +2037,25 @@
                 </div>
                 <div class="data-list__actions">
                   <div class="has-tooltip">
-                    <button class="icon-btn action-edit" aria-label="Edit Sync Analytics pipeline" type="button" data-asset="sync_analytics">
+                    <button class="icon-btn action-edit" aria-label="Edit Report Sync task" type="button" data-asset="task_sync">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
-                    <span class="tooltip" role="tooltip">Edit pipeline</span>
+                    <span class="tooltip" role="tooltip">Edit task</span>
                   </div>
                   <div class="has-tooltip">
-                    <button class="icon-btn action-delete" aria-label="Delete Sync Analytics pipeline" type="button" data-asset="sync_analytics">
+                    <button class="icon-btn action-delete" aria-label="Delete Report Sync task" type="button" data-asset="task_sync">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                     </button>
-                    <span class="tooltip" role="tooltip">Delete pipeline</span>
+                    <span class="tooltip" role="tooltip">Delete task</span>
                   </div>
                 </div>
               </li>
-              <li class="data-list__item" role="listitem" tabindex="0" data-asset="ml_feature_store" aria-label="ML Feature Store pipeline, running">
+              <li class="data-list__item" role="listitem" tabindex="0" data-asset="task_generate" aria-label="Report Generation task, running">
                 <div class="data-list__icon data-list__icon--pipeline" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                 </div>
                 <div class="data-list__info">
-                  <span class="data-list__name">ML Feature Store</span>
+                  <span class="data-list__name">Report Generation</span>
                   <span class="data-list__meta">Started 4m ago · Running…</span>
                 </div>
                 <div class="data-list__tags">
@@ -2063,13 +2063,13 @@
                 </div>
                 <div class="data-list__actions">
                   <div class="has-tooltip">
-                    <button class="icon-btn" aria-disabled="true" aria-label="Cannot edit ML Feature Store — pipeline is currently running" title="Pipeline is running" type="button" tabindex="0">
+                    <button class="icon-btn" aria-disabled="true" aria-label="Cannot edit Report Generation — task is currently running" title="Task is running" type="button" tabindex="0">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
                     <span class="tooltip" role="tooltip">Cannot edit — running</span>
                   </div>
                   <div class="has-tooltip">
-                    <button class="icon-btn" aria-disabled="true" aria-label="Cannot delete ML Feature Store — pipeline is currently running" title="Pipeline is running" type="button" tabindex="0">
+                    <button class="icon-btn" aria-disabled="true" aria-label="Cannot delete Report Generation — task is currently running" title="Task is running" type="button" tabindex="0">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                     </button>
                     <span class="tooltip" role="tooltip">Cannot delete — running</span>
@@ -2082,11 +2082,11 @@
 
         <section class="section" aria-labelledby="chart-heading">
           <div class="section__header">
-            <h2 class="section__title" id="chart-heading">Quality Trends</h2>
+            <h2 class="section__title" id="chart-heading">Weekly Overview</h2>
           </div>
           <div class="widget">
             <div class="widget__header">
-              <h3 class="widget__title">Weekly Quality Score</h3>
+              <h3 class="widget__title">Weekly Activity</h3>
             </div>
             <!-- Visual chart: aria-hidden so SR skips it -->
             <div class="chart-area" aria-hidden="true">
@@ -2118,14 +2118,14 @@
                 </div>
               </div>
               <div class="chart-legend">
-                <div class="chart-legend__item"><span class="chart-legend__dot" style="background:var(--color-accent)"></span> Checks passed</div>
-                <div class="chart-legend__item"><span class="chart-legend__dot" style="background:var(--color-danger)"></span> Flagged</div>
+                <div class="chart-legend__item"><span class="chart-legend__dot" style="background:var(--color-accent)"></span> Completed</div>
+                <div class="chart-legend__item"><span class="chart-legend__dot" style="background:var(--color-danger)"></span> Pending</div>
               </div>
             </div>
             <!-- Accessible data table for screen readers — outside aria-hidden -->
             <table class="sr-only">
-              <caption>Weekly quality scores: checks passed vs flagged</caption>
-              <thead><tr><th scope="col">Day</th><th scope="col">Checks Passed</th><th scope="col">Flagged</th></tr></thead>
+              <caption>Weekly activity: completed vs pending</caption>
+              <thead><tr><th scope="col">Day</th><th scope="col">Completed</th><th scope="col">Pending</th></tr></thead>
               <tbody>
                 <tr><th scope="row">Monday</th><td>88%</td><td>6%</td></tr>
                 <tr><th scope="row">Tuesday</th><td>92%</td><td>4%</td></tr>
@@ -2146,7 +2146,7 @@
   <div class="modal-overlay" id="edit-modal-overlay" aria-hidden="true" role="presentation">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title" id="edit-modal">
       <div class="modal__header">
-        <h2 class="modal__title" id="edit-modal-title">Edit Asset</h2>
+        <h2 class="modal__title" id="edit-modal-title">Edit Item</h2>
         <button class="icon-btn" aria-label="Close dialog" type="button" id="edit-modal-close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -2154,20 +2154,20 @@
       <div class="modal__body">
         <div class="form-group">
           <label for="edit-name" class="form-label">
-            Asset Name
+            Item Name
             <span class="form-label__required" aria-label="required">*</span>
           </label>
           <input type="text" id="edit-name" class="form-input" required aria-required="true" aria-describedby="edit-name-hint" value="">
-          <p class="form-hint" id="edit-name-hint">The unique identifier for this data asset.</p>
+          <p class="form-hint" id="edit-name-hint">The display name for this item.</p>
           <div class="form-error" id="edit-name-error" role="alert" aria-live="polite" style="display: none;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span id="edit-name-error-text">Asset name is required.</span>
+            <span id="edit-name-error-text">Item name is required.</span>
           </div>
         </div>
         <div class="form-group">
           <label for="edit-desc" class="form-label">Description</label>
-          <textarea id="edit-desc" class="form-input" rows="3" aria-describedby="edit-desc-hint" placeholder="Describe this data asset…"></textarea>
-          <p class="form-hint" id="edit-desc-hint">Provide context for data consumers. Markdown is supported.</p>
+          <textarea id="edit-desc" class="form-input" rows="3" aria-describedby="edit-desc-hint" placeholder="Describe this item…"></textarea>
+          <p class="form-hint" id="edit-desc-hint">Provide a brief description. Markdown is supported.</p>
         </div>
         <div class="form-group">
           <label for="edit-owner" class="form-label">
@@ -2176,12 +2176,12 @@
           </label>
           <select id="edit-owner" class="form-select" required aria-required="true" aria-describedby="edit-owner-hint">
             <option value="">Select an owner…</option>
-            <option value="alex">Vincent Olivari</option>
-            <option value="maria">Maria Garcia</option>
-            <option value="james">James Wilson</option>
-            <option value="sarah">Sarah Kim</option>
+            <option value="alex">Alex Morgan</option>
+            <option value="jordan">Jordan Lee</option>
+            <option value="sam">Sam Rivera</option>
+            <option value="taylor">Taylor Chen</option>
           </select>
-          <p class="form-hint" id="edit-owner-hint">The person responsible for this data asset.</p>
+          <p class="form-hint" id="edit-owner-hint">The person responsible for this item.</p>
           <div class="form-error" id="edit-owner-error" role="alert" aria-live="polite" style="display: none;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <span id="edit-owner-error-text">Please select an owner.</span>
@@ -2189,7 +2189,7 @@
         </div>
         <div class="form-group">
           <label for="edit-tags" class="form-label">Tags</label>
-          <input type="text" id="edit-tags" class="form-input" aria-describedby="edit-tags-hint" placeholder="e.g., finance, pii, verified">
+          <input type="text" id="edit-tags" class="form-input" aria-describedby="edit-tags-hint" placeholder="e.g., urgent, approved, review">
           <p class="form-hint" id="edit-tags-hint">Comma-separated list of tags for categorization.</p>
         </div>
       </div>
@@ -2206,13 +2206,13 @@
   <div class="modal-overlay" id="delete-modal-overlay" aria-hidden="true" role="presentation">
     <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="delete-modal-title" aria-describedby="delete-modal-desc" id="delete-modal">
       <div class="modal__header">
-        <h2 class="modal__title" id="delete-modal-title">Delete Asset</h2>
+        <h2 class="modal__title" id="delete-modal-title">Delete Item</h2>
         <button class="icon-btn" aria-label="Close dialog" type="button" id="delete-modal-close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div class="modal__body">
-        <p id="delete-modal-desc">Are you sure you want to delete <strong id="delete-asset-name"></strong>? This action cannot be undone. All associated metadata and lineage will be permanently removed.</p>
+        <p id="delete-modal-desc">Are you sure you want to delete <strong id="delete-asset-name"></strong>? This action cannot be undone. All associated data will be permanently removed.</p>
       </div>
       <div class="modal__footer">
         <button class="btn btn--secondary" type="button" id="delete-modal-cancel">Cancel</button>
@@ -2228,16 +2228,16 @@
   <aside class="drawer" id="asset-drawer" aria-hidden="true" aria-labelledby="drawer-title" role="dialog" aria-modal="true">
     <div class="drawer__header">
       <div>
-        <h2 class="drawer__title" id="drawer-title">Asset Details</h2>
+        <h2 class="drawer__title" id="drawer-title">Item Details</h2>
         <p class="drawer__subtitle" id="drawer-subtitle"></p>
       </div>
-      <button class="icon-btn" aria-label="Close asset details drawer" type="button" id="drawer-close">
+      <button class="icon-btn" aria-label="Close item details drawer" type="button" id="drawer-close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
 
     <!-- Tabs — WCAG role="tablist" -->
-    <div class="drawer__tabs" role="tablist" aria-label="Asset detail tabs">
+    <div class="drawer__tabs" role="tablist" aria-label="Item detail tabs">
       <button class="drawer__tab" role="tab" aria-selected="true" aria-controls="tab-general" id="tab-btn-general" tabindex="0">General</button>
       <button class="drawer__tab" role="tab" aria-selected="false" aria-controls="tab-properties" id="tab-btn-properties" tabindex="-1">Properties</button>
       <button class="drawer__tab" role="tab" aria-selected="false" aria-controls="tab-people" id="tab-btn-people" tabindex="-1">People</button>
@@ -2245,32 +2245,32 @@
 
     <div class="drawer__tab-panel" role="tabpanel" id="tab-general" aria-labelledby="tab-btn-general" aria-hidden="false" tabindex="0">
       <div class="detail-row">
-        <span class="detail-row__label">Type</span>
-        <span class="detail-row__value" id="detail-type">Table</span>
+        <span class="detail-row__label">Category</span>
+        <span class="detail-row__value" id="detail-type">Document</span>
       </div>
       <div class="detail-row">
         <span class="detail-row__label">Source</span>
-        <span class="detail-row__value" id="detail-source">PostgreSQL</span>
+        <span class="detail-row__value" id="detail-source">Source A</span>
       </div>
       <div class="detail-row">
-        <span class="detail-row__label">Schema</span>
-        <span class="detail-row__value" id="detail-schema">public</span>
+        <span class="detail-row__label">Group</span>
+        <span class="detail-row__value" id="detail-schema">Group 1</span>
       </div>
       <div class="detail-row">
-        <span class="detail-row__label">Row Count</span>
-        <span class="detail-row__value" id="detail-rows">1,200,000</span>
+        <span class="detail-row__label">Records</span>
+        <span class="detail-row__value" id="detail-rows">1,247</span>
       </div>
       <div class="detail-row">
         <span class="detail-row__label">Last Updated</span>
         <span class="detail-row__value" id="detail-updated">2 hours ago</span>
       </div>
       <div class="detail-row">
-        <span class="detail-row__label">Quality Score</span>
+        <span class="detail-row__label">Progress</span>
         <span class="detail-row__value" id="detail-quality">96%</span>
       </div>
       <div class="detail-row">
         <span class="detail-row__label">Description</span>
-        <span class="detail-row__value" id="detail-desc" style="max-width:220px">Core customer dimension table containing demographic and account data.</span>
+        <span class="detail-row__value" id="detail-desc" style="max-width:220px">Primary project for document management and team collaboration.</span>
       </div>
     </div>
 
@@ -2280,11 +2280,11 @@
         <span class="detail-row__value">Jan 15, 2025</span>
       </div>
       <div class="detail-row">
-        <span class="detail-row__label">Classification</span>
+        <span class="detail-row__label">Priority</span>
         <span class="detail-row__value">Confidential</span>
       </div>
       <div class="detail-row">
-        <span class="detail-row__label">Refresh Frequency</span>
+        <span class="detail-row__label">Update Frequency</span>
         <span class="detail-row__value">Hourly</span>
       </div>
       <div class="detail-row">
@@ -2292,46 +2292,46 @@
         <span class="detail-row__value">90 days</span>
       </div>
       <div class="detail-row">
-        <span class="detail-row__label">Lineage Depth</span>
+        <span class="detail-row__label">Dependencies</span>
         <span class="detail-row__value">3 upstream, 7 downstream</span>
       </div>
       <div class="detail-row">
         <span class="detail-row__label">Format</span>
-        <span class="detail-row__value">Parquet</span>
+        <span class="detail-row__value">PDF</span>
       </div>
       <div class="detail-row">
-        <span class="detail-row__label">Compression</span>
-        <span class="detail-row__value">Snappy</span>
+        <span class="detail-row__label">Encoding</span>
+        <span class="detail-row__value">Standard</span>
       </div>
     </div>
 
     <div class="drawer__tab-panel" role="tabpanel" id="tab-people" aria-labelledby="tab-btn-people" aria-hidden="true" tabindex="0">
       <div class="person-row">
-        <div class="person-avatar" style="background:linear-gradient(135deg,#4C6FD1,#7C5CBF)">VO</div>
+        <div class="person-avatar" style="background:linear-gradient(135deg,#525252,#6B6B6B)">AM</div>
         <div>
-          <div class="person-name">Vincent Olivari</div>
-          <div class="person-role">Owner · Data Engineering</div>
+          <div class="person-name">Alex Morgan</div>
+          <div class="person-role">Owner · Project Lead</div>
         </div>
       </div>
       <div class="person-row">
-        <div class="person-avatar" style="background:linear-gradient(135deg,#34D399,#6EE7B7)">MG</div>
+        <div class="person-avatar" style="background:linear-gradient(135deg,#7A7A7A,#9A9A9A)">JL</div>
         <div>
-          <div class="person-name">Maria Garcia</div>
-          <div class="person-role">Steward · Data Governance</div>
+          <div class="person-name">Jordan Lee</div>
+          <div class="person-role">Reviewer · Quality Assurance</div>
         </div>
       </div>
       <div class="person-row">
-        <div class="person-avatar" style="background:linear-gradient(135deg,#FBBF24,#F59E0B)">JW</div>
+        <div class="person-avatar" style="background:linear-gradient(135deg,#8A8A8A,#A5A5A5)">SR</div>
         <div>
-          <div class="person-name">James Wilson</div>
-          <div class="person-role">Consumer · Analytics</div>
+          <div class="person-name">Sam Rivera</div>
+          <div class="person-role">Member · Development</div>
         </div>
       </div>
       <div class="person-row">
-        <div class="person-avatar" style="background:linear-gradient(135deg,#F87171,#FB923C)">SK</div>
+        <div class="person-avatar" style="background:linear-gradient(135deg,#999999,#B0B0B0)">TC</div>
         <div>
-          <div class="person-name">Sarah Kim</div>
-          <div class="person-role">Consumer · Product</div>
+          <div class="person-name">Taylor Chen</div>
+          <div class="person-role">Member · Design</div>
         </div>
       </div>
     </div>
@@ -2368,7 +2368,7 @@
       </div>
       <div class="wcag-panel__item">
         <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <div><span class="wcag-panel__tag">2.4.7</span> Focus Visible — 3px blue focus ring on all focusable elements</div>
+        <div><span class="wcag-panel__tag">2.4.7</span> Focus Visible — 3px dark focus ring on all focusable elements</div>
       </div>
       <div class="wcag-panel__item">
         <svg class="wcag-panel__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
@@ -2643,15 +2643,15 @@
     const editModal = document.getElementById('edit-modal');
     let editTrigger = null;
 
-    // Asset data for the modal
+    // Item data for the modal
     const assetData = {
-      customers_dim: { name: 'customers_dim', desc: 'Core customer dimension table with demographic data.', owner: 'alex', tags: 'verified, pii' },
-      orders_fact: { name: 'orders_fact', desc: 'Fact table for all customer orders.', owner: 'maria', tags: 'verified, warehouse' },
-      v_revenue_monthly: { name: 'v_revenue_monthly', desc: 'Monthly aggregated revenue view.', owner: 'james', tags: 'finance' },
-      user_events_raw: { name: 'user_events_raw', desc: 'Raw user event stream from analytics SDK.', owner: 'sarah', tags: 'pii, streaming' },
-      etl_customers: { name: 'ETL — Customers', desc: 'Customer data ETL pipeline.', owner: 'alex', tags: 'etl' },
-      sync_analytics: { name: 'Sync — Analytics', desc: 'Analytics data sync pipeline.', owner: 'maria', tags: 'sync' },
-      ml_feature_store: { name: 'ML Feature Store', desc: 'ML feature engineering pipeline.', owner: 'james', tags: 'ml' },
+      project_alpha: { name: 'Project Alpha', desc: 'Primary project for document management.', owner: 'alex', tags: 'approved, flagged' },
+      project_beta: { name: 'Project Beta', desc: 'Secondary project for internal records.', owner: 'jordan', tags: 'approved, internal' },
+      report_monthly: { name: 'Monthly Report', desc: 'Monthly summary dashboard view.', owner: 'sam', tags: 'analytics' },
+      project_gamma: { name: 'Project Gamma', desc: 'External data integration project.', owner: 'taylor', tags: 'flagged, external' },
+      task_import: { name: 'Data Import', desc: 'Scheduled data import task.', owner: 'alex', tags: 'import' },
+      task_sync: { name: 'Report Sync', desc: 'Report synchronization task.', owner: 'jordan', tags: 'sync' },
+      task_generate: { name: 'Report Generation', desc: 'Automated report generation task.', owner: 'sam', tags: 'reports' },
     };
 
     // Form validation helpers
@@ -2710,7 +2710,7 @@
         'edit-name',
         'edit-name-error',
         value => value.length > 0,
-        'Asset name is required.'
+        'Item name is required.'
       );
 
       const ownerValid = validateField(
@@ -2758,7 +2758,7 @@
     document.getElementById('edit-name').addEventListener('blur', () => {
       const value = document.getElementById('edit-name').value.trim();
       if (value.length === 0) {
-        showFieldError('edit-name', 'edit-name-error', 'Asset name is required.');
+        showFieldError('edit-name', 'edit-name-error', 'Item name is required.');
       } else {
         hideFieldError('edit-name', 'edit-name-error');
       }
@@ -2821,7 +2821,7 @@
     document.getElementById('delete-modal-close').addEventListener('click', closeDeleteModal);
     document.getElementById('delete-modal-cancel').addEventListener('click', closeDeleteModal);
     document.getElementById('delete-modal-confirm').addEventListener('click', () => {
-      announce('Asset deleted');
+      announce('Item deleted');
       closeDeleteModal();
     });
     deleteOverlay.addEventListener('click', e => { if (e.target === deleteOverlay) closeDeleteModal(); });
@@ -2835,13 +2835,13 @@
     let drawerTrigger = null;
 
     const drawerDetails = {
-      customers_dim: { title: 'customers_dim', subtitle: 'Table · PostgreSQL', type: 'Table', source: 'PostgreSQL', schema: 'public', rows: '1,200,000', updated: '2 hours ago', quality: '96%', desc: 'Core customer dimension table containing demographic and account data.' },
-      orders_fact: { title: 'orders_fact', subtitle: 'Table · Snowflake', type: 'Table', source: 'Snowflake', schema: 'analytics', rows: '8,400,000', updated: '30 minutes ago', quality: '98%', desc: 'Fact table containing all customer order transactions with line items.' },
-      v_revenue_monthly: { title: 'v_revenue_monthly', subtitle: 'View · Snowflake', type: 'View', source: 'Snowflake', schema: 'finance', rows: '2,400', updated: '1 day ago', quality: '94%', desc: 'Monthly aggregated revenue view joining orders and customer data.' },
-      user_events_raw: { title: 'user_events_raw', subtitle: 'Table · BigQuery', type: 'Table', source: 'BigQuery', schema: 'events', rows: '42,000,000', updated: '5 minutes ago', quality: '89%', desc: 'Raw event stream from product analytics SDK. Contains PII.' },
-      etl_customers: { title: 'ETL — Customers', subtitle: 'Pipeline · Airflow', type: 'Pipeline', source: 'Airflow', schema: 'N/A', rows: 'N/A', updated: '15 minutes ago', quality: 'N/A', desc: 'Extracts customer data from CRM and loads into warehouse.' },
-      sync_analytics: { title: 'Sync — Analytics', subtitle: 'Pipeline · Airflow', type: 'Pipeline', source: 'Airflow', schema: 'N/A', rows: 'N/A', updated: '1 hour ago', quality: 'N/A', desc: 'Syncs analytics events from BigQuery to Snowflake.' },
-      ml_feature_store: { title: 'ML Feature Store', subtitle: 'Pipeline · Airflow', type: 'Pipeline', source: 'Airflow', schema: 'N/A', rows: 'N/A', updated: '4 minutes ago', quality: 'N/A', desc: 'Feature engineering pipeline for ML models.' },
+      project_alpha: { title: 'Project Alpha', subtitle: 'Document · Source A', type: 'Document', source: 'Source A', schema: 'Group 1', rows: '1,247', updated: '2 hours ago', quality: '96%', desc: 'Primary project for document management and team collaboration.' },
+      project_beta: { title: 'Project Beta', subtitle: 'Document · Source B', type: 'Document', source: 'Source B', schema: 'Group 2', rows: '8,400', updated: '30 minutes ago', quality: '98%', desc: 'Secondary project for internal records and reporting.' },
+      report_monthly: { title: 'Monthly Report', subtitle: 'Dashboard · Source B', type: 'Dashboard', source: 'Source B', schema: 'Group 3', rows: '2,400', updated: '1 day ago', quality: '94%', desc: 'Monthly summary dashboard aggregating key project metrics.' },
+      project_gamma: { title: 'Project Gamma', subtitle: 'Document · Source C', type: 'Document', source: 'Source C', schema: 'Group 4', rows: '42,000', updated: '5 minutes ago', quality: '89%', desc: 'External data integration project for cross-team collaboration.' },
+      task_import: { title: 'Data Import', subtitle: 'Task · Automated', type: 'Task', source: 'Scheduler', schema: 'N/A', rows: 'N/A', updated: '15 minutes ago', quality: 'N/A', desc: 'Scheduled task to import data from external sources.' },
+      task_sync: { title: 'Report Sync', subtitle: 'Task · Automated', type: 'Task', source: 'Scheduler', schema: 'N/A', rows: 'N/A', updated: '1 hour ago', quality: 'N/A', desc: 'Synchronizes report data across project environments.' },
+      task_generate: { title: 'Report Generation', subtitle: 'Task · Automated', type: 'Task', source: 'Scheduler', schema: 'N/A', rows: 'N/A', updated: '4 minutes ago', quality: 'N/A', desc: 'Automated report generation for weekly summaries.' },
     };
 
     function openDrawer(assetId) {
@@ -2872,7 +2872,7 @@
       document.body.style.overflow = 'hidden';
       trapFocus(drawer);
       requestAnimationFrame(() => document.getElementById('drawer-close').focus());
-      announce(`Asset details drawer opened for ${data.title || assetId}`);
+      announce(`Item details drawer opened for ${data.title || assetId}`);
     }
 
     function closeDrawer() {
@@ -3138,7 +3138,7 @@
           title: 'Skip Links & Landmarks',
           description: 'This page provides 5 skip links that become visible on keyboard focus, letting users jump past repeated navigation directly to content. Three semantic landmarks (banner, navigation, main) structure the page for screen reader rotor menus.',
           impact: 'Without skip links, keyboard users must Tab through every header element before reaching page content.',
-          srOutput: 'navigation "Skip links"\n\u251C\u2500\u2500 link "Skip to main content"\n\u251C\u2500\u2500 link "Skip to navigation"\n\u251C\u2500\u2500 link "Skip to search"\n\u251C\u2500\u2500 link "Skip to data catalog"\n\u2514\u2500\u2500 link "Skip to pipelines"',
+          srOutput: 'navigation "Skip links"\n\u251C\u2500\u2500 link "Skip to main content"\n\u251C\u2500\u2500 link "Skip to navigation"\n\u251C\u2500\u2500 link "Skip to search"\n\u251C\u2500\u2500 link "Skip to projects"\n\u2514\u2500\u2500 link "Skip to tasks"',
           onEnter() { document.querySelector('.skip-link')?.classList.add('skip-link--visible'); },
           onLeave() { document.querySelector('.skip-link')?.classList.remove('skip-link--visible'); }
         },
@@ -3148,15 +3148,15 @@
           title: 'Icon Button with Accessible Name',
           description: 'Every icon-only button has a descriptive aria-label so screen readers announce its purpose. The SVG icon is hidden from assistive tech with aria-hidden="true".',
           impact: 'Without aria-label, screen readers announce just "button" \u2014 users have no idea what it does.',
-          srOutput: 'button "Edit customers_dim"\n     \u2193 without aria-label:\nbutton ""'
+          srOutput: 'button "Edit Project Alpha"\n     \u2193 without aria-label:\nbutton ""'
         },
         {
-          target: 'button[aria-disabled="true"][aria-label*="Cannot delete v_revenue"]',
+          target: 'button[aria-disabled="true"][aria-label*="Cannot delete Monthly"]',
           wcag: '4.1.2',
           title: 'Disabled Button with Reason',
           description: 'This delete button uses aria-disabled="true" instead of the HTML disabled attribute. It stays in the tab order so screen reader users discover it, and its aria-label explains why it\u2019s disabled.',
           impact: 'The native disabled attribute removes the element from tab order \u2014 screen reader users never know it exists or why they can\u2019t act.',
-          srOutput: 'button "Cannot delete v_revenue_monthly\n  \u2014 asset is protected by governance\n  policy" (dimmed)'
+          srOutput: 'button "Cannot delete Monthly Report\n  \u2014 item is protected by admin\n  policy" (dimmed)'
         },
         {
           target: '.data-list__item',
@@ -3164,7 +3164,7 @@
           title: 'Focus Trapping in Drawer',
           description: 'Clicking this row opens a details drawer. Focus is immediately trapped inside \u2014 Tab cycles only through drawer controls (close button, tabs, tab content). Escape closes the drawer and returns focus to this row.',
           impact: 'Without focus trapping, keyboard users Tab behind the overlay into invisible content with no way back.',
-          srOutput: 'dialog "customers_dim"\n\u251C\u2500\u2500 button "Close dialog"\n\u251C\u2500\u2500 tablist\n\u2502   \u251C\u2500\u2500 tab "General" (selected)\n\u2502   \u251C\u2500\u2500 tab "Properties"\n\u2502   \u2514\u2500\u2500 tab "People"\n\u2514\u2500\u2500 tabpanel "General"\n     \u2514\u2500\u2500 [content, focus trapped]'
+          srOutput: 'dialog "Project Alpha"\n\u251C\u2500\u2500 button "Close dialog"\n\u251C\u2500\u2500 tablist\n\u2502   \u251C\u2500\u2500 tab "General" (selected)\n\u2502   \u251C\u2500\u2500 tab "Properties"\n\u2502   \u2514\u2500\u2500 tab "People"\n\u2514\u2500\u2500 tabpanel "General"\n     \u2514\u2500\u2500 [content, focus trapped]'
         },
         {
           target: '.action-edit',
@@ -3172,7 +3172,7 @@
           title: 'Modal with Focus Management',
           description: 'The edit modal traps focus, labels required fields with aria-required, and uses role="alert" to announce validation errors. On close, focus returns to the button that opened it.',
           impact: 'Without focus return, closing a modal leaves the user at the top of the page \u2014 losing their place in a long document.',
-          srOutput: 'dialog "Edit asset"\n\u251C\u2500\u2500 textbox "Asset Name *" (required)\n\u251C\u2500\u2500 textbox "Description"\n\u251C\u2500\u2500 combobox "Owner *" (required)\n\u251C\u2500\u2500 textbox "Tags"\n\u251C\u2500\u2500 button "Cancel"\n\u2514\u2500\u2500 button "Save Changes"\nOn validation error:\n  alert "Asset name is required"'
+          srOutput: 'dialog "Edit Item"\n\u251C\u2500\u2500 textbox "Item Name *" (required)\n\u251C\u2500\u2500 textbox "Description"\n\u251C\u2500\u2500 combobox "Owner *" (required)\n\u251C\u2500\u2500 textbox "Tags"\n\u251C\u2500\u2500 button "Cancel"\n\u2514\u2500\u2500 button "Save Changes"\nOn validation error:\n  alert "Item name is required"'
         },
         {
           target: '#live-region',
@@ -3180,7 +3180,7 @@
           title: 'Live Region Announcements',
           description: 'A hidden live region with aria-live="polite" silently feeds announcements to screen readers whenever the UI changes \u2014 modals open, tabs switch, landmarks are reached. Users never need to visually discover what happened.',
           impact: 'Without live regions, screen reader users miss every dynamic UI update entirely.',
-          srOutput: 'status (live: polite)\nAnnounced:\n  "Edit dialog opened for customers_dim"\n  "General tab selected"\n  "Navigation landmark"\n  "Drawer closed"'
+          srOutput: 'status (live: polite)\nAnnounced:\n  "Edit dialog opened for Project Alpha"\n  "General tab selected"\n  "Navigation landmark"\n  "Drawer closed"'
         }
       ];
 
