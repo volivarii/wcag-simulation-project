@@ -149,54 +149,91 @@
   // ──────────────────────────────────────────
 
   /**
-   * Position a tooltip relative to its .has-tooltip parent,
-   * choosing top/bottom/left/right based on available space.
+   * Position a tooltip relative to its .has-tooltip parent.
+   * Chooses the direction with most available space, then applies
+   * pixel-accurate inline styles so the tooltip always stays within
+   * the viewport even when the trigger is near an edge.
+   * The CSS arrow tracks the trigger centre via --tooltip-arrow-x/y.
+   * WCAG 1.4.13: Content on Hover or Focus must be dismissible and
+   * persistable; this positioning ensures the tooltip is fully visible.
    * @param {HTMLElement} tooltipEl
    */
   App.positionTooltip = function(tooltipEl) {
     var parent = tooltipEl.closest('.has-tooltip');
     if (!parent) return;
 
-    var parentRect = parent.getBoundingClientRect();
-    var viewportWidth = window.innerWidth;
-    var viewportHeight = window.innerHeight;
-    var margin = 10;
+    // ── 1. Reset all previously applied overrides ──────────────────
+    tooltipEl.classList.remove('tooltip--top', 'tooltip--bottom', 'tooltip--left', 'tooltip--right');
+    tooltipEl.style.left = '';
+    tooltipEl.style.right = '';
+    tooltipEl.style.top = '';
+    tooltipEl.style.bottom = '';
+    tooltipEl.style.transform = '';
+    tooltipEl.style.removeProperty('--tooltip-arrow-x');
+    tooltipEl.style.removeProperty('--tooltip-arrow-y');
 
+    // ── 2. Measure tooltip at a neutral off-screen position ─────────
     tooltipEl.style.visibility = 'hidden';
     tooltipEl.style.opacity = '0';
     tooltipEl.style.display = 'block';
+    tooltipEl.style.left = '0';
+    tooltipEl.style.top = '-9999px';
+    tooltipEl.style.transform = 'none';
     var tipWidth = tooltipEl.offsetWidth;
     var tipHeight = tooltipEl.offsetHeight;
     tooltipEl.style.visibility = '';
     tooltipEl.style.opacity = '';
     tooltipEl.style.display = '';
+    tooltipEl.style.left = '';
+    tooltipEl.style.top = '';
+    tooltipEl.style.transform = '';
 
-    tooltipEl.classList.remove('tooltip--top', 'tooltip--bottom', 'tooltip--left', 'tooltip--right');
+    var parentRect = parent.getBoundingClientRect();
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var gap = 8;   // space between trigger edge and tooltip
+    var margin = 8; // min distance from viewport edge
 
     var spaceAbove = parentRect.top;
-    var spaceBelow = viewportHeight - parentRect.bottom;
-    var spaceLeft = parentRect.left;
-    var spaceRight = viewportWidth - parentRect.right;
+    var spaceBelow = vh - parentRect.bottom;
+    var spaceLeft  = parentRect.left;
+    var spaceRight = vw - parentRect.right;
 
-    var centeredLeft = parentRect.left + parentRect.width / 2 - tipWidth / 2;
-    var centeredRight = parentRect.left + parentRect.width / 2 + tipWidth / 2;
-    var fitsHorizontallyCentered = centeredLeft >= margin && centeredRight <= viewportWidth - margin;
+    // ── 3. Pick direction ───────────────────────────────────────────
+    var dir;
+    if      (spaceAbove >= tipHeight + gap + margin) { dir = 'top';    }
+    else if (spaceBelow >= tipHeight + gap + margin) { dir = 'bottom'; }
+    else if (spaceRight >= tipWidth  + gap + margin) { dir = 'right';  }
+    else if (spaceLeft  >= tipWidth  + gap + margin) { dir = 'left';   }
+    else                                              { dir = 'bottom'; }
 
-    var fitsTop = spaceAbove >= tipHeight + 8 + margin;
-    var fitsBottom = spaceBelow >= tipHeight + 8 + margin;
-    var fitsLeftSide = spaceLeft >= tipWidth + 8 + margin;
-    var fitsRightSide = spaceRight >= tipWidth + 8 + margin;
+    tooltipEl.classList.add('tooltip--' + dir);
 
-    if (fitsTop && fitsHorizontallyCentered) {
-      tooltipEl.classList.add('tooltip--top');
-    } else if (fitsBottom && fitsHorizontallyCentered) {
-      tooltipEl.classList.add('tooltip--bottom');
-    } else if (fitsRightSide) {
-      tooltipEl.classList.add('tooltip--right');
-    } else if (fitsLeftSide) {
-      tooltipEl.classList.add('tooltip--left');
-    } else {
-      tooltipEl.classList.add('tooltip--bottom');
+    // ── 4. Apply pixel-accurate inline position with viewport clamping
+    if (dir === 'top' || dir === 'bottom') {
+      // Ideal centre-aligned left, clamped to viewport
+      var idealLeft   = parentRect.left + parentRect.width  / 2 - tipWidth  / 2;
+      var clampedLeft = Math.max(margin, Math.min(idealLeft, vw - tipWidth - margin));
+
+      // Convert viewport-absolute left to parent-relative offset
+      tooltipEl.style.left      = (clampedLeft - parentRect.left) + 'px';
+      tooltipEl.style.transform = 'none'; // disable CSS translateX(-50%)
+
+      // Arrow: point to trigger centre regardless of clamping
+      var arrowX = parentRect.left + parentRect.width / 2 - clampedLeft;
+      tooltipEl.style.setProperty('--tooltip-arrow-x', arrowX + 'px');
+    }
+
+    if (dir === 'left' || dir === 'right') {
+      // Ideal centre-aligned top, clamped to viewport
+      var idealTop   = parentRect.top + parentRect.height / 2 - tipHeight / 2;
+      var clampedTop = Math.max(margin, Math.min(idealTop, vh - tipHeight - margin));
+
+      tooltipEl.style.top       = (clampedTop - parentRect.top) + 'px';
+      tooltipEl.style.transform = 'none'; // disable CSS translateY(-50%)
+
+      var arrowY = parentRect.top + parentRect.height / 2 - clampedTop;
+      tooltipEl.style.setProperty('--tooltip-arrow-y', arrowY + 'px');
     }
   };
 

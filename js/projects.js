@@ -417,6 +417,7 @@
   // INIT — call shared utilities, initial render
   // ============================================
   App.initDropdowns();
+  App.initTooltips();
   App.initSearchShortcut();
   App.initKeyboardHelpToggle();
 
