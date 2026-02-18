@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects | WCAG 2.1 AA</title>
+  <meta name="description" content="A WCAG 2.1 AA compliant projects search page with filtering and bulk actions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       CSS CUSTOM PROPERTIES
+       ======================================== */
+    :root {
+      --color-bg: #F2F2F2;
+      --color-surface: #FFFFFF;
+      --color-surface-raised: #FFFFFF;
+      --color-surface-hover: #EBEBEB;
+      --color-border: #D4D4D4;
+      --color-border-focus: #4A4A4A;
+      --color-text-primary: #1A1A1A;
+      --color-text-secondary: #525252;
+      --color-text-muted: #6B6B6B;
+      --color-accent: #4A4A4A;
+      --color-accent-hover: #333333;
+      --color-accent-subtle: rgba(74,74,74,0.08);
+      --color-success: #3D3D3D;
+      --color-success-subtle: rgba(61,61,61,0.08);
+      --color-warning: #5C5C5C;
+      --color-warning-subtle: rgba(92,92,92,0.08);
+      --color-danger: #757575;
+      --color-danger-subtle: rgba(117,117,117,0.08);
+      --color-danger-hover: #636363;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-md: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+      --focus-ring: 0 0 0 3px rgba(74,74,74,0.35);
+      --transition-fast: 150ms ease;
+      --transition-med: 250ms ease;
+      --nav-width: 240px;
+      --header-height: 56px;
+      --filter-width: 260px;
+    }
+
+    /* ========================================
+       RESET & BASE
+       ======================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--color-text-primary);
+      background: var(--color-bg);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ========================================
+       SKIP LINKS — WCAG 2.4.1
+       ======================================== */
+    .skip-links {
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      padding: 10px 20px;
+      background: var(--color-accent);
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+      white-space: nowrap;
+      z-index: 10001;
+    }
+    .skip-link:focus {
+      left: 0;
+      outline: 3px solid #fff;
+      outline-offset: 2px;
+    }
+
+    /* ========================================
+       FOCUS STYLES — WCAG 2.4.7
+       ======================================== */
+    :focus { outline: none; }
+    :focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ========================================
+       SCREEN READER ONLY
+       ======================================== */
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ========================================
+       LAYOUT
+       ======================================== */
+    .app-layout {
+      display: grid;
+      grid-template-columns: var(--nav-width) 1fr;
+      grid-template-rows: var(--header-height) 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ========================================
+       TOP HEADER
+       ======================================== */
+    .app-header {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      z-index: 100;
+    }
+    .app-header__brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .app-header__logo {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, #4A4A4A, #6B6B6B);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .app-header__logo svg { width: 16px; height: 16px; }
+    .app-header__title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--color-text-primary);
+    }
+    .app-header__actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ========================================
+       HEADER SEARCH
+       ======================================== */
+    .header-search {
+      position: relative;
+      width: 280px;
+    }
+    .header-search__input {
+      width: 100%;
+      padding: 7px 12px 7px 36px;
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-primary);
+      font-family: var(--font-body);
+      font-size: 13px;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .header-search__input::placeholder { color: var(--color-text-muted); }
+    .header-search__input:focus-visible {
+      outline: none;
+      border-color: var(--color-border-focus);
+      box-shadow: var(--focus-ring);
+    }
+    .header-search__icon {
+      position: absolute;
+      left: 10px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+      pointer-events: none;
+    }
+    .header-search__kbd {
+      position: absolute;
+      right: 8px; top: 50%;
+      transform: translateY(-50%);
+      padding: 1px 6px;
+      background: var(--color-surface-hover);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    /* ========================================
+       NOTIFICATION BUTTON
+       ======================================== */
+    .notif-btn { position: relative; }
+    .notif-btn__badge {
+      position: absolute;
+      top: 2px; right: 2px;
+      width: 8px; height: 8px;
+      background: var(--color-danger);
+      border-radius: 50%;
+      border: 2px solid var(--color-surface);
+    }
+
+    /* ========================================
+       AVATAR MENU
+       ======================================== */
+    .avatar-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #525252, #6B6B6B);
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-weight: 600;
+      font-size: 13px;
+      font-family: var(--font-body);
+    }
+    .avatar-btn:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+
+    /* ========================================
+       LEFT NAVIGATION
+       ======================================== */
+    .app-nav {
+      grid-column: 1;
+      grid-row: 2;
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      padding: 16px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-section-label {
+      padding: 16px 12px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-muted);
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: background var(--transition-fast), color var(--transition-fast);
+      border: none;
+      background: none;
+      width: 100%;
+      cursor: pointer;
+      font-family: var(--font-body);
+      text-align: left;
+    }
+    .nav-item:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+    .nav-item:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: -1px;
+    }
+    .nav-item[aria-current="page"] {
+      background: var(--color-accent-subtle);
+      color: var(--color-accent);
+    }
+    .nav-item__icon { width: 18px; height: 18px; flex-shrink: 0; }
+    .nav-item__badge {
+      margin-left: auto;
+      padding: 1px 8px;
+      background: var(--color-accent-subtle);
+      color: var(--color-accent);
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .nav-spacer { flex: 1; }
+
+    /* ========================================
+       BUTTONS
+       ======================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .btn:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .btn--primary {
+      background: var(--color-accent);
+      color: #fff;
+      border-color: var(--color-accent);
+    }
+    .btn--primary:hover { background: var(--color-accent-hover); }
+    .btn--secondary {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border-color: var(--color-border);
+    }
+    .btn--secondary:hover { border-color: var(--color-text-muted); color: var(--color-text-primary); }
+    .btn--ghost {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border: none;
+      padding: 6px 10px;
+    }
+    .btn--ghost:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+    .btn--danger {
+      background: transparent;
+      color: var(--color-danger);
+      border-color: var(--color-danger);
+    }
+    .btn--danger:hover { background: var(--color-danger-subtle); }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn[aria-disabled="true"] {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* ========================================
+       ICON BUTTON
+       ======================================== */
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: background var(--transition-fast), color var(--transition-fast);
+      position: relative;
+    }
+    .icon-btn:hover {
+      background: var(--color-surface-hover);
+      color: var(--color-text-primary);
+    }
+    .icon-btn:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .icon-btn svg { width: 16px; height: 16px; }
+
+    /* ========================================
+       TOOLTIPS
+       ======================================== */
+    .has-tooltip { position: relative; }
+    .tooltip {
+      position: absolute;
+      padding: 6px 12px;
+      background: #1A1A1A;
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      z-index: 1000;
+      bottom: calc(100% + 8px);
+      top: auto;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+    }
+    .tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #1A1A1A;
+    }
+    .has-tooltip:hover .tooltip,
+    .has-tooltip:focus-within .tooltip {
+      opacity: 1;
+    }
+    .has-tooltip [aria-expanded="true"] ~ .tooltip {
+      opacity: 0 !important;
+    }
+
+    /* ========================================
+       DROPDOWN MENU
+       ======================================== */
+    .dropdown { position: relative; }
+    .dropdown__menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      min-width: 180px;
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 6px;
+      z-index: 500;
+      display: none;
+    }
+    .dropdown__menu[aria-hidden="false"] { display: block; }
+    .dropdown__item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: none;
+      background: none;
+      color: var(--color-text-secondary);
+      font-family: var(--font-body);
+      font-size: 13px;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+    .dropdown__item:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+    .dropdown__item:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: -1px;
+    }
+    .dropdown__item svg { width: 15px; height: 15px; }
+    .dropdown__sep {
+      height: 1px;
+      background: var(--color-border);
+      margin: 4px 8px;
+    }
+    .dropdown__menu--right { right: 0; left: auto; }
+    .dropdown__menu--notifications {
+      min-width: 320px;
+      max-width: 380px;
+      right: 0; left: auto;
+    }
+    .dropdown__header {
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      border-bottom: 1px solid var(--color-border);
+      margin: -6px -6px 6px -6px;
+    }
+    .dropdown__item--notification {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 12px;
+      gap: 4px;
+    }
+    .notification__content { width: 100%; }
+    .notification__content strong {
+      display: block;
+      color: var(--color-text-primary);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .notification__content p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      line-height: 1.4;
+    }
+    .notification__time {
+      display: block;
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: 6px;
+    }
+
+    /* ========================================
+       MAIN CONTENT AREA — 2-column: filters + results
+       ======================================== */
+    .app-main {
+      grid-column: 2;
+      grid-row: 2;
+      display: grid;
+      grid-template-columns: var(--filter-width) 1fr;
+      overflow: hidden;
+      background: var(--color-bg);
+    }
+
+    /* ========================================
+       FILTER PANEL (aside)
+       ======================================== */
+    .filter-panel {
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      overflow-y: auto;
+      padding: 0;
+    }
+    .filter-panel__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .filter-panel__title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+    .filter-panel__clear {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+    }
+    .filter-panel__clear:hover { background: var(--color-accent-subtle); }
+    .filter-panel__clear:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+
+    /* Filter group */
+    .filter-group {
+      border-bottom: 1px solid var(--color-border);
+    }
+    .filter-group__toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      text-align: left;
+    }
+    .filter-group__toggle:hover { background: var(--color-surface-hover); }
+    .filter-group__toggle:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: -3px;
+    }
+    .filter-group__chevron {
+      width: 16px; height: 16px;
+      transition: transform var(--transition-fast);
+      color: var(--color-text-muted);
+      flex-shrink: 0;
+    }
+    .filter-group__toggle[aria-expanded="true"] .filter-group__chevron {
+      transform: rotate(180deg);
+    }
+    .filter-group__content {
+      padding: 0 16px 12px;
+      display: none;
+    }
+    .filter-group__content[aria-hidden="false"] { display: block; }
+
+    /* Range slider */
+    .range-slider {
+      padding: 8px 0;
+    }
+    .range-slider__labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-bottom: 8px;
+    }
+    .range-slider__track {
+      position: relative;
+      height: 6px;
+      background: var(--color-border);
+      border-radius: 3px;
+      margin: 12px 0;
+    }
+    .range-slider__fill {
+      position: absolute;
+      height: 100%;
+      background: var(--color-accent);
+      border-radius: 3px;
+    }
+    .range-slider__input {
+      position: absolute;
+      top: -6px;
+      width: 100%;
+      height: 18px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      pointer-events: none;
+      margin: 0;
+    }
+    .range-slider__input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--color-surface);
+      border: 2px solid var(--color-accent);
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .range-slider__input::-moz-range-thumb {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--color-surface);
+      border: 2px solid var(--color-accent);
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .range-slider__input:focus-visible::-webkit-slider-thumb {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .range-slider__input:focus-visible::-moz-range-thumb {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .range-slider__count {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Checkbox filter list */
+    .filter-checkbox-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .filter-checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 4px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+    .filter-checkbox-item:hover { background: var(--color-surface-hover); }
+    .filter-checkbox-item input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--color-accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .filter-checkbox-item input[type="checkbox"]:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .filter-checkbox-item__label {
+      flex: 1;
+      font-size: 13px;
+      color: var(--color-text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .filter-checkbox-item__badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px; height: 18px;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 3px;
+      color: #fff;
+      background: var(--color-accent);
+      flex-shrink: 0;
+    }
+    .filter-checkbox-item__badge--doc { background: #525252; }
+    .filter-checkbox-item__badge--dash { background: #6B6B6B; }
+    .filter-checkbox-item__badge--task { background: #3D3D3D; }
+    .filter-checkbox-item__badge--rpt { background: #757575; }
+    .filter-checkbox-item__badge--intg { background: #4A4A4A; }
+    .filter-checkbox-item__badge--tmpl { background: #5C5C5C; }
+    .filter-checkbox-item__badge--arch { background: #8A8A8A; }
+    .filter-checkbox-item__count {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+    .filter-view-more {
+      background: none;
+      border: none;
+      color: var(--color-accent);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 4px;
+      font-family: var(--font-body);
+      border-radius: var(--radius-sm);
+    }
+    .filter-view-more:hover { background: var(--color-accent-subtle); }
+    .filter-view-more:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+
+    /* Toggle switch */
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+    .toggle-switch__label {
+      font-size: 13px;
+      color: var(--color-text-primary);
+    }
+    .toggle-switch__track {
+      position: relative;
+      width: 36px; height: 20px;
+      background: var(--color-border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+      border: none;
+      padding: 0;
+    }
+    .toggle-switch__track:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .toggle-switch__track[aria-checked="true"] {
+      background: var(--color-accent);
+    }
+    .toggle-switch__thumb {
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 16px; height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: left var(--transition-fast);
+      pointer-events: none;
+    }
+    .toggle-switch__track[aria-checked="true"] .toggle-switch__thumb {
+      left: 18px;
+    }
+
+    /* Filter search input */
+    .filter-search {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--color-text-primary);
+      background: #F5F5F5;
+    }
+    .filter-search::placeholder { color: var(--color-text-muted); }
+    .filter-search:focus-visible {
+      outline: none;
+      border-color: var(--color-border-focus);
+      box-shadow: var(--focus-ring);
+    }
+
+    /* Filter select */
+    .filter-select {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--color-text-primary);
+      background: #F5F5F5;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7194' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    .filter-select:focus-visible {
+      outline: none;
+      border-color: var(--color-border-focus);
+      box-shadow: var(--focus-ring);
+    }
+
+    /* ========================================
+       RESULTS AREA
+       ======================================== */
+    .results-area {
+      overflow-y: auto;
+      padding: 24px 28px 40px;
+    }
+
+    /* Results header */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .results-header__title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--color-text-primary);
+    }
+    .results-header__count {
+      font-weight: 400;
+      color: var(--color-text-muted);
+      font-size: 16px;
+    }
+
+    /* Toolbar */
+    .results-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      border-bottom: none;
+    }
+    .results-toolbar__select-all {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .results-toolbar__select-all input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--color-accent);
+      cursor: pointer;
+    }
+    .results-toolbar__select-all input[type="checkbox"]:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .results-toolbar__select-all label {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .results-toolbar__sep {
+      width: 1px;
+      height: 24px;
+      background: var(--color-border);
+    }
+    .results-toolbar__sort {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .results-toolbar__sort label {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .results-toolbar__sort select {
+      padding: 4px 24px 4px 8px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: var(--color-text-primary);
+      background: var(--color-surface);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      cursor: pointer;
+    }
+    .results-toolbar__sort select:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .results-toolbar__actions {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+    }
+    .toolbar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      color: var(--color-text-secondary);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+    .toolbar-btn:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+    .toolbar-btn:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .toolbar-btn svg { width: 14px; height: 14px; }
+    .toolbar-btn[aria-disabled="true"] {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Result cards */
+    .result-list {
+      list-style: none;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-top: none;
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+    }
+    .result-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--color-border);
+      transition: background var(--transition-fast);
+    }
+    .result-card:last-child {
+      border-bottom: none;
+      border-radius: 0 0 calc(var(--radius-md) - 1px) calc(var(--radius-md) - 1px);
+    }
+    .result-card:hover { background: var(--color-surface-hover); }
+    .result-card:focus-within { background: rgba(74,74,74,0.03); }
+
+    .result-card__checkbox {
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .result-card__checkbox input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--color-accent);
+      cursor: pointer;
+    }
+    .result-card__checkbox input[type="checkbox"]:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+    .result-card__badges {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .result-card__type-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px; height: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 3px;
+      color: #fff;
+    }
+    .result-card__shared-badge {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .result-card__body {
+      flex: 1;
+      min-width: 0;
+    }
+    .result-card__title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .result-card__title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-accent);
+      text-decoration: none;
+    }
+    .result-card__title:hover { text-decoration: underline; }
+    .result-card__title:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    /* Progress bar */
+    .result-card__progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--color-border);
+      border-radius: 3px;
+      overflow: hidden;
+      max-width: 120px;
+    }
+    .progress-bar__fill {
+      height: 100%;
+      background: var(--color-accent);
+      border-radius: 3px;
+      transition: width var(--transition-med);
+    }
+    .progress-bar__label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+    }
+
+    .result-card__desc {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .result-card__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .result-card__tag {
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--color-accent-subtle);
+      color: var(--color-accent);
+    }
+    .result-card__date {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-left: auto;
+    }
+
+    /* ========================================
+       DRAWER — right side, focus trap
+       ======================================== */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+    .drawer-overlay[aria-hidden="false"] { display: block; }
+    .drawer-overlay--visible { opacity: 1; }
+    .drawer {
+      position: fixed;
+      top: 0; right: 0;
+      width: 420px;
+      max-width: 95vw;
+      height: 100vh;
+      background: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      box-shadow: var(--shadow-lg);
+      z-index: 1001;
+      display: none;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 300ms ease;
+    }
+    .drawer--visible {
+      display: flex;
+      transform: translateX(0);
+    }
+    .drawer__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+    .drawer__title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+    .drawer__subtitle {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+    .drawer__tabs {
+      display: flex;
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 24px;
+      flex-shrink: 0;
+    }
+    .drawer__tab {
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      color: var(--color-text-muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color var(--transition-fast), border-color var(--transition-fast);
+    }
+    .drawer__tab:hover { color: var(--color-text-primary); }
+    .drawer__tab:focus-visible {
+      outline: 3px solid var(--color-border-focus);
+      outline-offset: -3px;
+    }
+    .drawer__tab[aria-selected="true"] {
+      color: var(--color-accent);
+      border-bottom-color: var(--color-accent);
+    }
+    .drawer__tab-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: none;
+    }
+    .drawer__tab-panel[aria-hidden="false"] { display: block; }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-row__label {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+    .detail-row__value {
+      font-size: 13px;
+      color: var(--color-text-primary);
+      font-weight: 500;
+      text-align: right;
+      max-width: 220px;
+    }
+    .person-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .person-row:last-child { border-bottom: none; }
+    .person-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .person-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .person-role {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    /* ========================================
+       LIVE REGION
+       ======================================== */
+    .live-region {
+      position: absolute;
+      left: -9999px;
+      width: 1px; height: 1px;
+    }
+
+    /* ========================================
+       KEYBOARD SHORTCUTS HELP BAR
+       ======================================== */
+    .kbd-help-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+      padding: 10px 24px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      z-index: 9998;
+      animation: fadeIn 150ms ease;
+    }
+    .kbd-help-bar[aria-hidden="false"] { display: flex; }
+    .kbd-help-bar__item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+    .kbd-help-bar__key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      padding: 2px 6px;
+      background: var(--color-surface-hover);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .kbd-help-bar__close {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* Landmark focus pulse */
+    .landmark-focus-ring {
+      animation: landmarkPulse 600ms ease;
+    }
+    @keyframes landmarkPulse {
+      0% { box-shadow: 0 0 0 0 rgba(74,74,74,0.4); }
+      50% { box-shadow: 0 0 0 4px rgba(74,74,74,0.2); }
+      100% { box-shadow: none; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================
+       SKIP LINKS — WCAG 2.4.1
+       ========================================== -->
+  <nav class="skip-links" aria-label="Skip links">
+    <a href="#filter-panel" class="skip-link">Skip to filters</a>
+    <a href="#results-area" class="skip-link">Skip to results</a>
+    <a href="#main-nav" class="skip-link">Skip to navigation</a>
+    <a href="#search-input" class="skip-link">Skip to search</a>
+  </nav>
+
+  <!-- Live region for screen reader announcements -->
+  <div id="live-region" class="live-region" aria-live="polite" aria-atomic="true" role="status"></div>
+
+  <!-- ==========================================
+       APP LAYOUT
+       ========================================== -->
+  <div class="app-layout">
+
+    <!-- ==========================================
+         TOP HEADER
+         ========================================== -->
+    <header class="app-header" role="banner">
+      <div class="app-header__brand">
+        <div class="app-header__logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="app-header__title">WCAG 2.1 AA Demo</span>
+      </div>
+
+      <div class="header-search" role="search" aria-label="Global search">
+        <svg class="header-search__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <label for="search-input" class="sr-only">Search items, projects, or tasks</label>
+        <input type="search" id="search-input" class="header-search__input" placeholder="Search items…" autocomplete="off">
+        <kbd class="header-search__kbd" aria-hidden="true">⌘K</kbd>
+      </div>
+
+      <div class="app-header__actions">
+        <!-- Notifications Dropdown -->
+        <div class="dropdown has-tooltip">
+          <button class="icon-btn notif-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications — 3 unread" aria-describedby="tt-notif" id="notif-menu-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <span class="notif-btn__badge" aria-hidden="true"></span>
+          </button>
+          <span class="tooltip" role="tooltip" id="tt-notif">Notifications</span>
+          <div class="dropdown__menu dropdown__menu--notifications" role="menu" aria-labelledby="notif-menu-btn" aria-hidden="true" id="notif-dropdown">
+            <div class="dropdown__header">Notifications</div>
+            <button class="dropdown__item dropdown__item--notification" role="menuitem" tabindex="-1">
+              <div class="notification__content">
+                <strong>Task Failed</strong>
+                <p>Scheduled task "Data Import" failed at step 3</p>
+                <span class="notification__time">5 minutes ago</span>
+              </div>
+            </button>
+            <button class="dropdown__item dropdown__item--notification" role="menuitem" tabindex="-1">
+              <div class="notification__content">
+                <strong>Quality Alert</strong>
+                <p>Project Alpha has 12 validation errors</p>
+                <span class="notification__time">1 hour ago</span>
+              </div>
+            </button>
+            <button class="dropdown__item dropdown__item--notification" role="menuitem" tabindex="-1">
+              <div class="notification__content">
+                <strong>Access Request</strong>
+                <p>Jane Smith requested access to Project Beta</p>
+                <span class="notification__time">2 hours ago</span>
+              </div>
+            </button>
+            <div class="dropdown__sep" role="separator"></div>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">View all notifications</button>
+          </div>
+        </div>
+
+        <!-- Help Dropdown -->
+        <div class="dropdown has-tooltip">
+          <button class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Help and documentation" aria-describedby="tt-help" id="help-menu-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </button>
+          <span class="tooltip" role="tooltip" id="tt-help">Help</span>
+          <div class="dropdown__menu" role="menu" aria-labelledby="help-menu-btn" aria-hidden="true" id="help-dropdown">
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Documentation
+            </button>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Support Portal
+            </button>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="22 7 12 13 2 7"/></svg>
+              Contact Support
+            </button>
+            <div class="dropdown__sep" role="separator"></div>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Keyboard Shortcuts
+            </button>
+          </div>
+        </div>
+
+        <!-- User Menu Dropdown -->
+        <div class="dropdown">
+          <button class="avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="User menu — Alex Morgan" id="user-menu-btn" type="button">AM</button>
+          <div class="dropdown__menu dropdown__menu--right" role="menu" aria-labelledby="user-menu-btn" aria-hidden="true" id="user-dropdown">
+            <div class="dropdown__header">
+              <strong>Alex Morgan</strong>
+              <p style="font-size: 12px; color: var(--color-text-muted); margin: 2px 0 0;">alex@example.com</p>
+            </div>
+            <div class="dropdown__sep" role="separator"></div>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              My Profile
+            </button>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+              Settings
+            </button>
+            <div class="dropdown__sep" role="separator"></div>
+            <button class="dropdown__item" role="menuitem" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         LEFT NAVIGATION
+         ========================================== -->
+    <nav class="app-nav" id="main-nav" aria-label="Main navigation">
+      <span class="nav-section-label">Workspace</span>
+      <a href="index.html" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="projects.html" class="nav-item" aria-current="page">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        Projects
+        <span class="nav-item__badge">24</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Tasks
+      </a>
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Reports
+      </a>
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Messages
+      </a>
+
+      <span class="nav-section-label">Administration</span>
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Team
+      </a>
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
+      </a>
+
+      <div class="nav-spacer"></div>
+
+      <a href="#" class="nav-item">
+        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Help
+      </a>
+    </nav>
+
+    <!-- ==========================================
+         MAIN CONTENT — filters + results
+         ========================================== -->
+    <main class="app-main" id="main-content" aria-label="Projects search">
+
+      <!-- ==========================================
+           FILTER PANEL
+           ========================================== -->
+      <aside class="filter-panel" id="filter-panel" aria-label="Search filters">
+        <div class="filter-panel__header">
+          <h2 class="filter-panel__title">Filters</h2>
+          <button class="filter-panel__clear" type="button" id="clear-all-filters">Clear all</button>
+        </div>
+
+        <!-- Completion level -->
+        <div class="filter-group">
+          <button class="filter-group__toggle" type="button" aria-expanded="true" aria-controls="filter-completion" id="filter-toggle-completion">
+            Completion level
+            <svg class="filter-group__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="filter-group__content" id="filter-completion" aria-hidden="false">
+            <div class="range-slider">
+              <div class="range-slider__labels">
+                <span id="range-min-label">0%</span>
+                <span id="range-max-label">100%</span>
+              </div>
+              <div class="range-slider__track">
+                <div class="range-slider__fill" id="range-fill" style="left: 0%; width: 100%;"></div>
+                <label for="range-min" class="sr-only">Minimum completion level</label>
+                <input type="range" id="range-min" class="range-slider__input" min="0" max="100" value="0" step="5" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <label for="range-max" class="sr-only">Maximum completion level</label>
+                <input type="range" id="range-max" class="range-slider__input" min="0" max="100" value="100" step="5" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+              </div>
+              <div class="range-slider__count" id="range-count" aria-live="polite">15 results</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div class="filter-group">
+          <button class="filter-group__toggle" type="button" aria-expanded="true" aria-controls="filter-item" id="filter-toggle-item">
+            Category
+            <svg class="filter-group__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="filter-group__content" id="filter-item" aria-hidden="false">
+            <fieldset style="border:none; padding:0; margin:0;">
+              <legend class="sr-only">Filter by category</legend>
+              <ul class="filter-checkbox-list" role="list" id="item-type-list">
+                <li class="filter-checkbox-item" role="listitem">
+                  <input type="checkbox" id="filter-doc" value="document" checked>
+                  <label for="filter-doc" class="filter-checkbox-item__label">
+                    <span class="filter-checkbox-item__badge filter-checkbox-item__badge--doc">DC</span>
+                    Document
+                    <span class="filter-checkbox-item__count">4</span>
+                  </label>
+                </li>
+                <li class="filter-checkbox-item" role="listitem">
+                  <input type="checkbox" id="filter-dash" value="dashboard" checked>
+                  <label for="filter-dash" class="filter-checkbox-item__label">
+                    <span class="filter-checkbox-item__badge filter-checkbox-item__badge--dash">DB</span>
+                    Dashboard
+                    <span class="filter-checkbox-item__count">3</span>
+                  </label>
+                </li>
+                <li class="filter-checkbox-item" role="listitem">
+                  <input type="checkbox" id="filter-task" value="task" checked>
+                  <label for="filter-task" class="filter-checkbox-item__label">
+                    <span class="filter-checkbox-item__badge filter-checkbox-item__badge--task">TK</span>
+                    Task
+                    <span class="filter-checkbox-item__count">3</span>
+                  </label>
+                </li>
+                <li class="filter-checkbox-item" role="listitem">
+                  <input type="checkbox" id="filter-rpt" value="report" checked>
+                  <label for="filter-rpt" class="filter-checkbox-item__label">
+                    <span class="filter-checkbox-item__badge filter-checkbox-item__badge--rpt">RP</span>
+                    Report
+                    <span class="filter-checkbox-item__count">2</span>
+                  </label>
+                </li>
+                <li class="filter-checkbox-item" role="listitem" id="extra-filter-1" style="display:none;">
+                  <input type="checkbox" id="filter-intg" value="integration" checked>
+                  <label for="filter-intg" class="filter-checkbox-item__label">
+                    <span class="filter-checkbox-item__badge filter-checkbox-item__badge--intg">IN</span>
+                    Integration
+                    <span class="filter-checkbox-item__count">1</span>
+                  </label>
+                </li>
+                <li class="filter-checkbox-item" role="listitem" id="extra-filter-2" style="display:none;">
+                  <input type="checkbox" id="filter-tmpl" value="template" checked>
+                  <label for="filter-tmpl" class="filter-checkbox-item__label">
+                    <span class="filter-checkbox-item__badge filter-checkbox-item__badge--tmpl">TM</span>
+                    Template
+                    <span class="filter-checkbox-item__count">1</span>
+                  </label>
+                </li>
+                <li class="filter-checkbox-item" role="listitem" id="extra-filter-3" style="display:none;">
+                  <input type="checkbox" id="filter-arch" value="archive" checked>
+                  <label for="filter-arch" class="filter-checkbox-item__label">
+                    <span class="filter-checkbox-item__badge filter-checkbox-item__badge--arch">AR</span>
+                    Archive
+                    <span class="filter-checkbox-item__count">1</span>
+                  </label>
+                </li>
+              </ul>
+            </fieldset>
+            <button class="filter-view-more" type="button" id="view-more-items" aria-expanded="false">View more (3)</button>
+          </div>
+        </div>
+
+        <!-- Starred -->
+        <div class="filter-group">
+          <button class="filter-group__toggle" type="button" aria-expanded="true" aria-controls="filter-suggestions" id="filter-toggle-suggestions">
+            Starred
+            <svg class="filter-group__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="filter-group__content" id="filter-suggestions" aria-hidden="false">
+            <div class="toggle-switch">
+              <span class="toggle-switch__label" id="suggestions-label">Show only starred items</span>
+              <button class="toggle-switch__track" role="switch" aria-checked="false" aria-labelledby="suggestions-label" id="suggestions-toggle" type="button">
+                <span class="toggle-switch__thumb" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="filter-group">
+          <button class="filter-group__toggle" type="button" aria-expanded="true" aria-controls="filter-lifecycle" id="filter-toggle-lifecycle">
+            Status
+            <svg class="filter-group__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="filter-group__content" id="filter-lifecycle" aria-hidden="false">
+            <label for="lifecycle-select" class="sr-only">Project status</label>
+            <select id="lifecycle-select" class="filter-select">
+              <option value="">All statuses</option>
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+              <option value="archived">Archived</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Owner -->
+        <div class="filter-group">
+          <button class="filter-group__toggle" type="button" aria-expanded="false" aria-controls="filter-curator" id="filter-toggle-curator">
+            Owner
+            <svg class="filter-group__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="filter-group__content" id="filter-curator" aria-hidden="true">
+            <label for="curator-search" class="sr-only">Search owners</label>
+            <input type="search" id="curator-search" class="filter-search" placeholder="Type to search">
+          </div>
+        </div>
+
+        <!-- Team -->
+        <div class="filter-group">
+          <button class="filter-group__toggle" type="button" aria-expanded="false" aria-controls="filter-contact" id="filter-toggle-contact">
+            Team
+            <svg class="filter-group__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="filter-group__content" id="filter-contact" aria-hidden="true">
+            <label for="contact-search" class="sr-only">Search teams</label>
+            <input type="search" id="contact-search" class="filter-search" placeholder="Type to search">
+          </div>
+        </div>
+
+        <!-- Department -->
+        <div class="filter-group">
+          <button class="filter-group__toggle" type="button" aria-expanded="false" aria-controls="filter-product" id="filter-toggle-product">
+            Department
+            <svg class="filter-group__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="filter-group__content" id="filter-product" aria-hidden="true">
+            <label for="product-search" class="sr-only">Search departments</label>
+            <input type="search" id="product-search" class="filter-search" placeholder="Type to search">
+          </div>
+        </div>
+      </aside>
+
+      <!-- ==========================================
+           RESULTS AREA
+           ========================================== -->
+      <section class="results-area" id="results-area" aria-label="Search results">
+        <div class="results-header">
+          <h1 class="results-header__title">
+            Projects <span class="results-header__count" id="results-count">(15 results)</span>
+          </h1>
+          <button class="btn btn--secondary" type="button" id="save-filters-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Filters
+          </button>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="results-toolbar" role="toolbar" aria-label="Results actions">
+          <div class="results-toolbar__select-all">
+            <input type="checkbox" id="select-all" aria-label="Select all results">
+            <label for="select-all">Select all</label>
+          </div>
+          <div class="results-toolbar__sep" aria-hidden="true"></div>
+          <div class="results-toolbar__sort">
+            <label for="sort-select">Sort by</label>
+            <select id="sort-select">
+              <option value="relevance">Relevance</option>
+              <option value="name-asc">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+              <option value="date-desc">Newest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="completion-desc">Completion high-low</option>
+              <option value="completion-asc">Completion low-high</option>
+            </select>
+          </div>
+          <div class="results-toolbar__actions">
+            <button class="toolbar-btn" type="button" aria-disabled="true" id="bulk-edit" aria-label="Edit selected items">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+            <button class="toolbar-btn" type="button" aria-disabled="true" id="bulk-move" aria-label="Move selected items to folder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+              Move to folder
+            </button>
+            <button class="toolbar-btn" type="button" aria-disabled="true" id="bulk-delete" aria-label="Delete selected items">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+              Delete
+            </button>
+            <button class="toolbar-btn" type="button" aria-disabled="true" id="bulk-export" aria-label="Export selected items">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export
+            </button>
+          </div>
+        </div>
+
+        <!-- Results list -->
+        <ul class="result-list" role="list" aria-label="Project results" id="results-list">
+          <!-- Results are rendered by JavaScript -->
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==========================================
+       RIGHT DRAWER — focus trap + tabs
+       ========================================== -->
+  <div class="drawer-overlay" id="drawer-overlay" aria-hidden="true"></div>
+  <aside class="drawer" id="project-drawer" aria-hidden="true" aria-labelledby="drawer-title" role="dialog" aria-modal="true">
+    <div class="drawer__header">
+      <div>
+        <h2 class="drawer__title" id="drawer-title">Project Details</h2>
+        <p class="drawer__subtitle" id="drawer-subtitle"></p>
+      </div>
+      <button class="icon-btn" aria-label="Close project details drawer" type="button" id="drawer-close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="drawer__tabs" role="tablist" aria-label="Project detail tabs">
+      <button class="drawer__tab" role="tab" aria-selected="true" aria-controls="tab-general" id="tab-btn-general" tabindex="0">General</button>
+      <button class="drawer__tab" role="tab" aria-selected="false" aria-controls="tab-properties" id="tab-btn-properties" tabindex="-1">Properties</button>
+      <button class="drawer__tab" role="tab" aria-selected="false" aria-controls="tab-people" id="tab-btn-people" tabindex="-1">People</button>
+    </div>
+
+    <div class="drawer__tab-panel" role="tabpanel" id="tab-general" aria-labelledby="tab-btn-general" aria-hidden="false" tabindex="0">
+      <div class="detail-row">
+        <span class="detail-row__label">Type</span>
+        <span class="detail-row__value" id="detail-type"></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Completion</span>
+        <span class="detail-row__value" id="detail-completion"></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Shared</span>
+        <span class="detail-row__value" id="detail-shared"></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Last Updated</span>
+        <span class="detail-row__value" id="detail-updated"></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Tags</span>
+        <span class="detail-row__value" id="detail-tags"></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Description</span>
+        <span class="detail-row__value" id="detail-desc"></span>
+      </div>
+    </div>
+
+    <div class="drawer__tab-panel" role="tabpanel" id="tab-properties" aria-labelledby="tab-btn-properties" aria-hidden="true" tabindex="0">
+      <div class="detail-row">
+        <span class="detail-row__label">Created</span>
+        <span class="detail-row__value" id="detail-created">Jan 15, 2025</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Priority</span>
+        <span class="detail-row__value" id="detail-priority">Medium</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Status</span>
+        <span class="detail-row__value" id="detail-status">Active</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Department</span>
+        <span class="detail-row__value" id="detail-department">Engineering</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Due Date</span>
+        <span class="detail-row__value" id="detail-due">Mar 31, 2025</span>
+      </div>
+    </div>
+
+    <div class="drawer__tab-panel" role="tabpanel" id="tab-people" aria-labelledby="tab-btn-people" aria-hidden="true" tabindex="0">
+      <div class="person-row">
+        <div class="person-avatar" style="background: linear-gradient(135deg, #4A4A4A, #6B6B6B);" aria-hidden="true">AM</div>
+        <div>
+          <div class="person-name">Alex Morgan</div>
+          <div class="person-role">Owner</div>
+        </div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background: linear-gradient(135deg, #525252, #757575);" aria-hidden="true">JL</div>
+        <div>
+          <div class="person-name">Jordan Lee</div>
+          <div class="person-role">Reviewer</div>
+        </div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background: linear-gradient(135deg, #3D3D3D, #5C5C5C);" aria-hidden="true">SR</div>
+        <div>
+          <div class="person-name">Sam Rivera</div>
+          <div class="person-role">Contributor</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==========================================
+       KEYBOARD SHORTCUTS HELP BAR
+       ========================================== -->
+  <div class="kbd-help-bar" id="kbd-help-bar" aria-hidden="true" role="region" aria-label="Keyboard shortcuts">
+    <div class="kbd-help-bar__item">
+      <kbd class="kbd-help-bar__key">Tab</kbd>
+      Navigate
+    </div>
+    <div class="kbd-help-bar__item">
+      <kbd class="kbd-help-bar__key">F6</kbd>
+      Cycle landmarks
+    </div>
+    <div class="kbd-help-bar__item">
+      <kbd class="kbd-help-bar__key">⌘K</kbd>
+      Search
+    </div>
+    <div class="kbd-help-bar__item">
+      <kbd class="kbd-help-bar__key">Esc</kbd>
+      Close / collapse
+    </div>
+    <div class="kbd-help-bar__item">
+      <kbd class="kbd-help-bar__key">?</kbd>
+      Toggle this bar
+    </div>
+    <button class="icon-btn kbd-help-bar__close" aria-label="Close keyboard shortcuts bar" id="kbd-help-close" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <script>
+    // ============================================
+    // MOCK DATA
+    // ============================================
+    const projectData = [
+      { id: 1, name: 'Project Alpha', type: 'document', typeCode: 'DC', shared: true, completion: 85, desc: 'Primary project for document management and cross-team collaboration across all departments.', tags: ['Approved', 'Internal'], updated: '2025-02-14', suggested: false },
+      { id: 2, name: 'Project Beta', type: 'document', typeCode: 'DC', shared: true, completion: 72, desc: 'Internal records management project with automated workflows and approval chains.', tags: ['Approved', 'Internal'], updated: '2025-02-13', suggested: true },
+      { id: 3, name: 'Weekly Status Report', type: 'report', typeCode: 'RP', shared: false, completion: 95, desc: 'Automated weekly status report aggregating task progress, blockers, and team velocity metrics.', tags: ['Recurring', 'Analytics'], updated: '2025-02-15', suggested: false },
+      { id: 4, name: 'Monthly Report', type: 'dashboard', typeCode: 'DB', shared: true, completion: 100, desc: 'Monthly summary dashboard showing key project metrics, resource utilization, and milestone tracking.', tags: ['Analytics', 'Executive'], updated: '2025-02-10', suggested: false },
+      { id: 5, name: 'Q1 Planning Document', type: 'document', typeCode: 'DC', shared: false, completion: 45, desc: 'Quarterly planning document outlining objectives, resource allocation, and deliverable timelines.', tags: ['Planning', 'Strategy'], updated: '2025-02-08', suggested: true },
+      { id: 6, name: 'Data Import Task', type: 'task', typeCode: 'TK', shared: true, completion: 60, desc: 'Scheduled task for importing records from external sources with validation and error handling.', tags: ['Import', 'Automated'], updated: '2025-02-12', suggested: false },
+      { id: 7, name: 'Report Sync Task', type: 'task', typeCode: 'TK', shared: true, completion: 88, desc: 'Synchronization task keeping report data consistent across project environments and teams.', tags: ['Sync', 'Automated'], updated: '2025-02-15', suggested: false },
+      { id: 8, name: 'Project Gamma', type: 'document', typeCode: 'DC', shared: false, completion: 78, desc: 'External collaboration project for cross-team document sharing and review workflows.', tags: ['Flagged', 'External'], updated: '2025-02-11', suggested: true },
+      { id: 9, name: 'Team Performance Dashboard', type: 'dashboard', typeCode: 'DB', shared: true, completion: 92, desc: 'Real-time team performance dashboard tracking task completion rates, response times, and workload distribution.', tags: ['Team', 'Metrics'], updated: '2025-02-09', suggested: false },
+      { id: 10, name: 'Resource Allocation Dashboard', type: 'dashboard', typeCode: 'DB', shared: true, completion: 68, desc: 'Resource allocation overview showing team capacity, project assignments, and availability forecasts.', tags: ['Resources', 'Planning'], updated: '2025-02-14', suggested: false },
+      { id: 11, name: 'CRM Integration', type: 'integration', typeCode: 'IN', shared: true, completion: 100, desc: 'Integration module connecting the project workspace with external CRM for bi-directional record sync.', tags: ['CRM', 'External'], updated: '2025-01-28', suggested: false },
+      { id: 12, name: 'Quarterly Review Report', type: 'report', typeCode: 'RP', shared: false, completion: 55, desc: 'End-of-quarter review report with KPI summaries, milestone achievements, and improvement recommendations.', tags: ['Quarterly', 'Review'], updated: '2025-02-06', suggested: true },
+      { id: 13, name: 'Report Generation Task', type: 'task', typeCode: 'TK', shared: true, completion: 30, desc: 'Automated task for generating weekly and monthly reports from aggregated project activity data.', tags: ['Reports', 'Automated'], updated: '2025-02-05', suggested: false },
+      { id: 14, name: 'Onboarding Checklist Template', type: 'template', typeCode: 'TM', shared: true, completion: 98, desc: 'Reusable onboarding template with task assignments, milestone checkpoints, and progress tracking.', tags: ['Onboarding', 'Template'], updated: '2025-02-15', suggested: false },
+      { id: 15, name: 'Legacy Project Archive', type: 'archive', typeCode: 'AR', shared: false, completion: 42, desc: 'Archived collection of completed legacy projects retained for reference and audit purposes.', tags: ['Archive', 'Legacy'], updated: '2025-02-07', suggested: true },
+    ];
+
+    // Type badge background colors
+    const typeBadgeColors = {
+      'DC': '#525252', 'DB': '#6B6B6B', 'TK': '#3D3D3D', 'RP': '#757575',
+      'IN': '#4A4A4A', 'TM': '#5C5C5C', 'AR': '#8A8A8A'
+    };
+
+    // ============================================
+    // ANNOUNCE — screen reader live region
+    // ============================================
+    function announce(message) {
+      const el = document.getElementById('live-region');
+      el.textContent = '';
+      requestAnimationFrame(() => { el.textContent = message; });
+    }
+
+    // ============================================
+    // FOCUS TRAP UTILITY
+    // ============================================
+    function getFocusableElements(container) {
+      const selector = 'a[href], button:not([disabled]):not([aria-disabled="true"]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+      return [...container.querySelectorAll(selector)].filter(el => {
+        if (el.offsetParent === null) return false;
+        let node = el;
+        while (node && node !== container) {
+          if (node.getAttribute && node.getAttribute('aria-hidden') === 'true') return false;
+          node = node.parentElement;
+        }
+        return true;
+      });
+    }
+
+    function trapFocus(container) {
+      releaseFocus(container);
+      const focusable = getFocusableElements(container);
+      if (focusable.length === 0) return;
+
+      function handler(e) {
+        if (e.key !== 'Tab') return;
+        const current = getFocusableElements(container);
+        if (current.length === 0) return;
+        const first = current[0];
+        const last = current[current.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      }
+      container._focusTrapHandler = handler;
+      container.addEventListener('keydown', handler);
+    }
+
+    function releaseFocus(container) {
+      if (container._focusTrapHandler) {
+        container.removeEventListener('keydown', container._focusTrapHandler);
+        delete container._focusTrapHandler;
+      }
+    }
+
+    // ============================================
+    // DRAWER — open/close with focus trap
+    // ============================================
+    const drawerOverlay = document.getElementById('drawer-overlay');
+    const drawer = document.getElementById('project-drawer');
+    let drawerTrigger = null;
+
+    function openDrawer(itemId) {
+      drawerTrigger = document.activeElement;
+      const item = projectData.find(p => p.id === itemId);
+      if (!item) return;
+
+      // Populate drawer content
+      document.getElementById('drawer-title').textContent = item.name;
+      const typeName = item.type.charAt(0).toUpperCase() + item.type.slice(1);
+      document.getElementById('drawer-subtitle').textContent = typeName + (item.shared ? ' · Shared' : '');
+      document.getElementById('detail-type').textContent = typeName;
+      document.getElementById('detail-completion').textContent = item.completion + '%';
+      document.getElementById('detail-shared').textContent = item.shared ? 'Yes' : 'No';
+      document.getElementById('detail-updated').textContent = formatDate(item.updated);
+      document.getElementById('detail-tags').textContent = item.tags.join(', ');
+      document.getElementById('detail-desc').textContent = item.desc;
+
+      // Reset tabs to General
+      switchTab('general');
+
+      drawerOverlay.setAttribute('aria-hidden', 'false');
+      drawer.setAttribute('aria-hidden', 'false');
+      drawer.style.display = 'flex';
+      requestAnimationFrame(() => {
+        drawerOverlay.classList.add('drawer-overlay--visible');
+        drawer.classList.add('drawer--visible');
+      });
+      document.body.style.overflow = 'hidden';
+      trapFocus(drawer);
+      requestAnimationFrame(() => document.getElementById('drawer-close').focus());
+      announce(`Project details drawer opened for ${item.name}`);
+    }
+
+    function closeDrawer() {
+      drawerOverlay.classList.remove('drawer-overlay--visible');
+      drawer.classList.remove('drawer--visible');
+      drawer.addEventListener('transitionend', function handler() {
+        drawer.removeEventListener('transitionend', handler);
+        drawerOverlay.setAttribute('aria-hidden', 'true');
+        drawer.setAttribute('aria-hidden', 'true');
+        drawer.style.display = 'none';
+      }, { once: true });
+      document.body.style.overflow = '';
+      releaseFocus(drawer);
+      if (drawerTrigger) drawerTrigger.focus();
+      announce('Drawer closed');
+    }
+
+    document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+    drawerOverlay.addEventListener('click', closeDrawer);
+    drawer.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+    // ============================================
+    // DRAWER TABS — arrow key navigation
+    // ============================================
+    const tabButtons = document.querySelectorAll('.drawer__tab');
+    const tabPanels = document.querySelectorAll('.drawer__tab-panel');
+
+    function switchTab(tabName) {
+      tabButtons.forEach(btn => {
+        const id = btn.id.replace('tab-btn-', '');
+        const selected = id === tabName;
+        btn.setAttribute('aria-selected', selected ? 'true' : 'false');
+        btn.setAttribute('tabindex', selected ? '0' : '-1');
+      });
+      tabPanels.forEach(panel => {
+        const id = panel.id.replace('tab-', '');
+        panel.setAttribute('aria-hidden', id === tabName ? 'false' : 'true');
+      });
+    }
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabName = btn.id.replace('tab-btn-', '');
+        switchTab(tabName);
+        announce(`${tabName.charAt(0).toUpperCase() + tabName.slice(1)} tab selected`);
+      });
+
+      btn.addEventListener('keydown', e => {
+        const tabs = [...tabButtons];
+        const idx = tabs.indexOf(btn);
+        let target = null;
+
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          target = tabs[(idx + 1) % tabs.length];
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          target = tabs[(idx - 1 + tabs.length) % tabs.length];
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          target = tabs[0];
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          target = tabs[tabs.length - 1];
+        }
+
+        if (target) {
+          const tabName = target.id.replace('tab-btn-', '');
+          switchTab(tabName);
+          target.focus();
+          announce(`${tabName.charAt(0).toUpperCase() + tabName.slice(1)} tab`);
+        }
+      });
+    });
+
+    // ============================================
+    // RENDER RESULTS
+    // ============================================
+    let filteredData = [...projectData];
+
+    function renderResults(data) {
+      const list = document.getElementById('results-list');
+      const countEl = document.getElementById('results-count');
+      countEl.textContent = `(${data.length} result${data.length !== 1 ? 's' : ''})`;
+
+      if (data.length === 0) {
+        list.innerHTML = '<li style="padding: 40px; text-align: center; color: var(--color-text-muted); font-size: 14px;">No results match your filters.</li>';
+        return;
+      }
+
+      list.innerHTML = data.map(item => `
+        <li class="result-card" role="listitem" data-item-id="${item.id}" tabindex="0" style="cursor:pointer;" aria-label="${item.name}, ${item.type.replace(/-/g, ' ')}, ${item.completion}% complete">
+          <div class="result-card__checkbox">
+            <input type="checkbox" class="result-checkbox" data-id="${item.id}" aria-label="Select ${item.name}">
+          </div>
+          <div class="result-card__badges">
+            <span class="result-card__type-badge" style="background: ${typeBadgeColors[item.typeCode] || '#4A4A4A'}" title="${item.type.replace(/-/g, ' ')}">${item.typeCode}</span>
+            ${item.shared ? '<span class="result-card__shared-badge">Shared</span>' : ''}
+          </div>
+          <div class="result-card__body">
+            <div class="result-card__title-row">
+              <a href="#" class="result-card__title" onclick="event.preventDefault()">${item.name}</a>
+            </div>
+            <div class="result-card__progress">
+              <div class="progress-bar" role="progressbar" aria-valuenow="${item.completion}" aria-valuemin="0" aria-valuemax="100" aria-label="Completion: ${item.completion}%">
+                <div class="progress-bar__fill" style="width: ${item.completion}%"></div>
+              </div>
+              <span class="progress-bar__label">${item.completion}%</span>
+            </div>
+            <p class="result-card__desc">${item.desc}</p>
+            <div class="result-card__meta">
+              ${item.tags.map(tag => `<span class="result-card__tag">${tag}</span>`).join('')}
+              <span class="result-card__date">Updated ${formatDate(item.updated)}</span>
+            </div>
+          </div>
+        </li>
+      `).join('');
+
+      // Re-bind checkbox listeners and click handlers
+      bindResultCheckboxes();
+      bindResultCardClicks();
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+      if (diff === 0) return 'today';
+      if (diff === 1) return 'yesterday';
+      if (diff < 7) return `${diff} days ago`;
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    // ============================================
+    // FILTERING
+    // ============================================
+    function applyFilters() {
+      const minVal = parseInt(document.getElementById('range-min').value);
+      const maxVal = parseInt(document.getElementById('range-max').value);
+
+      // Get checked item types
+      const checkedTypes = [];
+      document.querySelectorAll('#item-type-list input[type="checkbox"]').forEach(cb => {
+        if (cb.checked) checkedTypes.push(cb.value);
+      });
+
+      // Suggestions toggle
+      const suggestionsOnly = document.getElementById('suggestions-toggle').getAttribute('aria-checked') === 'true';
+
+      // Lifecycle filter
+      const lifecycle = document.getElementById('lifecycle-select').value;
+
+      filteredData = projectData.filter(item => {
+        if (item.completion < minVal || item.completion > maxVal) return false;
+        if (checkedTypes.length > 0 && !checkedTypes.includes(item.type)) return false;
+        if (suggestionsOnly && !item.suggested) return false;
+        return true;
+      });
+
+      // Sort
+      sortResults();
+
+      renderResults(filteredData);
+      document.getElementById('range-count').textContent = `${filteredData.length} results`;
+      announce(`${filteredData.length} results match your filters`);
+
+      // Reset select-all
+      const selectAll = document.getElementById('select-all');
+      selectAll.checked = false;
+      selectAll.indeterminate = false;
+      updateBulkActions();
+    }
+
+    // ============================================
+    // SORTING
+    // ============================================
+    function sortResults() {
+      const sortVal = document.getElementById('sort-select').value;
+      switch (sortVal) {
+        case 'name-asc':
+          filteredData.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'name-desc':
+          filteredData.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+        case 'date-desc':
+          filteredData.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+          break;
+        case 'date-asc':
+          filteredData.sort((a, b) => new Date(a.updated) - new Date(b.updated));
+          break;
+        case 'completion-desc':
+          filteredData.sort((a, b) => b.completion - a.completion);
+          break;
+        case 'completion-asc':
+          filteredData.sort((a, b) => a.completion - b.completion);
+          break;
+        default:
+          filteredData.sort((a, b) => a.id - b.id);
+      }
+    }
+
+    document.getElementById('sort-select').addEventListener('change', () => {
+      sortResults();
+      renderResults(filteredData);
+      announce(`Results sorted by ${document.getElementById('sort-select').selectedOptions[0].text}`);
+    });
+
+    // ============================================
+    // SELECT ALL & BULK ACTIONS
+    // ============================================
+    function bindResultCheckboxes() {
+      document.querySelectorAll('.result-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateSelectAllState);
+      });
+    }
+
+    function bindResultCardClicks() {
+      document.querySelectorAll('.result-card').forEach(card => {
+        card.addEventListener('click', e => {
+          // Don't open drawer if clicking checkbox or link
+          if (e.target.closest('.result-card__checkbox') || e.target.closest('.result-card__title')) return;
+          const itemId = parseInt(card.getAttribute('data-item-id'));
+          if (itemId) openDrawer(itemId);
+        });
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            if (e.target.closest('.result-card__checkbox') || e.target.closest('.result-card__title')) return;
+            e.preventDefault();
+            const itemId = parseInt(card.getAttribute('data-item-id'));
+            if (itemId) openDrawer(itemId);
+          }
+        });
+      });
+    }
+
+    function updateSelectAllState() {
+      const checkboxes = document.querySelectorAll('.result-checkbox');
+      const checked = document.querySelectorAll('.result-checkbox:checked');
+      const selectAll = document.getElementById('select-all');
+
+      if (checked.length === 0) {
+        selectAll.checked = false;
+        selectAll.indeterminate = false;
+      } else if (checked.length === checkboxes.length) {
+        selectAll.checked = true;
+        selectAll.indeterminate = false;
+      } else {
+        selectAll.checked = false;
+        selectAll.indeterminate = true;
+      }
+
+      updateBulkActions();
+    }
+
+    function updateBulkActions() {
+      const checked = document.querySelectorAll('.result-checkbox:checked');
+      const hasSelection = checked.length > 0;
+
+      ['bulk-edit', 'bulk-move', 'bulk-delete', 'bulk-export'].forEach(id => {
+        document.getElementById(id).setAttribute('aria-disabled', hasSelection ? 'false' : 'true');
+      });
+
+      if (hasSelection) {
+        announce(`${checked.length} item${checked.length !== 1 ? 's' : ''} selected`);
+      }
+    }
+
+    document.getElementById('select-all').addEventListener('change', (e) => {
+      const checked = e.target.checked;
+      document.querySelectorAll('.result-checkbox').forEach(cb => { cb.checked = checked; });
+      updateBulkActions();
+      announce(checked ? `All ${document.querySelectorAll('.result-checkbox').length} items selected` : 'Selection cleared');
+    });
+
+    // ============================================
+    // FILTER GROUP COLLAPSE / EXPAND
+    // ============================================
+    document.querySelectorAll('.filter-group__toggle').forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        const contentId = toggle.getAttribute('aria-controls');
+        const content = document.getElementById(contentId);
+        content.setAttribute('aria-hidden', expanded ? 'true' : 'false');
+        announce(expanded ? 'Filter collapsed' : 'Filter expanded');
+      });
+    });
+
+    // ============================================
+    // RANGE SLIDER
+    // ============================================
+    const rangeMin = document.getElementById('range-min');
+    const rangeMax = document.getElementById('range-max');
+    const rangeFill = document.getElementById('range-fill');
+    const rangeMinLabel = document.getElementById('range-min-label');
+    const rangeMaxLabel = document.getElementById('range-max-label');
+
+    function updateRange() {
+      let minVal = parseInt(rangeMin.value);
+      let maxVal = parseInt(rangeMax.value);
+
+      if (minVal > maxVal) {
+        [minVal, maxVal] = [maxVal, minVal];
+      }
+
+      rangeFill.style.left = minVal + '%';
+      rangeFill.style.width = (maxVal - minVal) + '%';
+      rangeMinLabel.textContent = minVal + '%';
+      rangeMaxLabel.textContent = maxVal + '%';
+      rangeMin.setAttribute('aria-valuenow', minVal);
+      rangeMax.setAttribute('aria-valuenow', maxVal);
+    }
+
+    rangeMin.addEventListener('input', () => { updateRange(); applyFilters(); });
+    rangeMax.addEventListener('input', () => { updateRange(); applyFilters(); });
+
+    // ============================================
+    // ITEM TYPE CHECKBOXES
+    // ============================================
+    document.querySelectorAll('#item-type-list input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', applyFilters);
+    });
+
+    // View more / less
+    document.getElementById('view-more-items').addEventListener('click', function() {
+      const expanded = this.getAttribute('aria-expanded') === 'true';
+      this.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      this.textContent = expanded ? 'View more (3)' : 'View less';
+      ['extra-filter-1', 'extra-filter-2', 'extra-filter-3'].forEach(id => {
+        document.getElementById(id).style.display = expanded ? 'none' : '';
+      });
+      announce(expanded ? '3 item types hidden' : '3 more item types shown');
+    });
+
+    // ============================================
+    // TOGGLE SWITCH
+    // ============================================
+    const suggestionsToggle = document.getElementById('suggestions-toggle');
+    suggestionsToggle.addEventListener('click', () => {
+      const checked = suggestionsToggle.getAttribute('aria-checked') === 'true';
+      suggestionsToggle.setAttribute('aria-checked', checked ? 'false' : 'true');
+      announce(checked ? 'Starred filter off' : 'Starred filter on');
+      applyFilters();
+    });
+    suggestionsToggle.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        suggestionsToggle.click();
+      }
+    });
+
+    // ============================================
+    // LIFECYCLE SELECT
+    // ============================================
+    document.getElementById('lifecycle-select').addEventListener('change', applyFilters);
+
+    // ============================================
+    // CLEAR ALL FILTERS
+    // ============================================
+    document.getElementById('clear-all-filters').addEventListener('click', () => {
+      rangeMin.value = 0;
+      rangeMax.value = 100;
+      updateRange();
+      document.querySelectorAll('#item-type-list input[type="checkbox"]').forEach(cb => { cb.checked = true; });
+      suggestionsToggle.setAttribute('aria-checked', 'false');
+      document.getElementById('lifecycle-select').value = '';
+      document.getElementById('curator-search').value = '';
+      document.getElementById('contact-search').value = '';
+      document.getElementById('product-search').value = '';
+      applyFilters();
+      announce('All filters cleared');
+    });
+
+    // ============================================
+    // SAVE FILTERS
+    // ============================================
+    document.getElementById('save-filters-btn').addEventListener('click', () => {
+      announce('Filters saved successfully');
+    });
+
+    // ============================================
+    // DROPDOWN MENUS — keyboard nav
+    // ============================================
+    document.querySelectorAll('.dropdown').forEach(dropdown => {
+      const trigger = dropdown.querySelector('[aria-haspopup]');
+      const menu = dropdown.querySelector('.dropdown__menu');
+      if (!trigger || !menu) return;
+      const items = [...menu.querySelectorAll('[role="menuitem"]')];
+
+      function openMenu() {
+        menu.setAttribute('aria-hidden', 'false');
+        trigger.setAttribute('aria-expanded', 'true');
+        items[0]?.focus();
+        announce('Menu opened');
+      }
+      function closeMenu() {
+        menu.setAttribute('aria-hidden', 'true');
+        trigger.setAttribute('aria-expanded', 'false');
+        trigger.focus();
+        announce('Menu closed');
+      }
+
+      trigger.addEventListener('click', () => {
+        const open = menu.getAttribute('aria-hidden') === 'false';
+        open ? closeMenu() : openMenu();
+      });
+
+      trigger.addEventListener('keydown', e => {
+        if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openMenu();
+        }
+      });
+
+      menu.addEventListener('keydown', e => {
+        const idx = items.indexOf(document.activeElement);
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          items[(idx + 1) % items.length].focus();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          items[(idx - 1 + items.length) % items.length].focus();
+        } else if (e.key === 'Escape') {
+          closeMenu();
+        } else if (e.key === 'Tab') {
+          closeMenu();
+        }
+      });
+
+      document.addEventListener('click', e => {
+        if (!dropdown.contains(e.target)) {
+          menu.setAttribute('aria-hidden', 'true');
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+
+    // ============================================
+    // KEYBOARD SHORTCUT: Cmd/Ctrl+K → search
+    // ============================================
+    document.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('search-input').focus();
+      }
+    });
+
+    // ============================================
+    // F6: LANDMARK CYCLING
+    // Header → Nav → Filters → Results
+    // ============================================
+    const landmarks = [
+      document.querySelector('[role="banner"]'),
+      document.getElementById('main-nav'),
+      document.getElementById('filter-panel'),
+      document.getElementById('results-area'),
+    ];
+    let currentLandmarkIndex = -1;
+    const landmarkNames = ['Header', 'Navigation', 'Filters', 'Results'];
+
+    function cycleLandmark(reverse) {
+      if (reverse) {
+        currentLandmarkIndex = (currentLandmarkIndex - 1 + landmarks.length) % landmarks.length;
+      } else {
+        currentLandmarkIndex = (currentLandmarkIndex + 1) % landmarks.length;
+      }
+      const target = landmarks[currentLandmarkIndex];
+      if (!target) return;
+
+      const focusable = target.querySelector(
+        'a[href], button:not([disabled]):not([aria-disabled="true"]), input, select, textarea, [tabindex="0"]'
+      );
+      if (focusable) {
+        focusable.focus();
+      } else {
+        target.setAttribute('tabindex', '-1');
+        target.focus();
+      }
+
+      target.classList.add('landmark-focus-ring');
+      setTimeout(() => target.classList.remove('landmark-focus-ring'), 700);
+
+      announce(`${landmarkNames[currentLandmarkIndex]} landmark`);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F6') {
+        e.preventDefault();
+        // Don't cycle if drawer is open
+        if (drawer.getAttribute('aria-hidden') === 'false') return;
+        cycleLandmark(e.shiftKey);
+      }
+    });
+
+    // ============================================
+    // ? KEY: TOGGLE KEYBOARD SHORTCUTS HELP BAR
+    // ============================================
+    const kbdHelpBar = document.getElementById('kbd-help-bar');
+
+    function toggleKbdHelp() {
+      const open = kbdHelpBar.getAttribute('aria-hidden') === 'false';
+      kbdHelpBar.setAttribute('aria-hidden', open ? 'true' : 'false');
+      if (!open) announce('Keyboard shortcuts bar opened');
+    }
+
+    document.addEventListener('keydown', e => {
+      const tag = document.activeElement.tagName.toLowerCase();
+      if (e.key === '?' && tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+        e.preventDefault();
+        toggleKbdHelp();
+      }
+    });
+
+    document.getElementById('kbd-help-close').addEventListener('click', () => {
+      kbdHelpBar.setAttribute('aria-hidden', 'true');
+    });
+
+    // ============================================
+    // BULK ACTION BUTTONS — announce action
+    // ============================================
+    ['bulk-edit', 'bulk-move', 'bulk-delete', 'bulk-export'].forEach(id => {
+      document.getElementById(id).addEventListener('click', () => {
+        if (document.getElementById(id).getAttribute('aria-disabled') === 'true') return;
+        const count = document.querySelectorAll('.result-checkbox:checked').length;
+        const action = id.replace('bulk-', '');
+        announce(`${action.charAt(0).toUpperCase() + action.slice(1)} action applied to ${count} item${count !== 1 ? 's' : ''}`);
+      });
+    });
+
+    // ============================================
+    // INITIAL RENDER
+    // ============================================
+    renderResults(projectData);
+  </script>
+</body>
+</html>
