@@ -647,6 +647,50 @@
   })();
 
   // ============================================
+  // WELCOME MODAL — shown on first page load
+  // ============================================
+  var welcomeOverlay = document.getElementById('welcome-modal-overlay');
+  var welcomeModal = document.getElementById('welcome-modal');
+
+  (function initWelcomeModal() {
+    if (!welcomeOverlay || !welcomeModal) return;
+
+    function openWelcome() {
+      welcomeOverlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      trapFocus(welcomeModal);
+      requestAnimationFrame(function() {
+        var closeBtn = document.getElementById('welcome-modal-close');
+        if (closeBtn) closeBtn.focus();
+      });
+      announce('Welcome guide opened');
+    }
+
+    function closeWelcome() {
+      welcomeOverlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      releaseFocus(welcomeModal);
+      var firstNav = document.querySelector('.nav-item');
+      if (firstNav) firstNav.focus();
+      announce('Welcome guide closed. Use Tab to navigate, or press ? for keyboard shortcuts.');
+    }
+
+    document.getElementById('welcome-modal-close').addEventListener('click', closeWelcome);
+    document.getElementById('welcome-modal-start').addEventListener('click', closeWelcome);
+    welcomeOverlay.addEventListener('click', function(e) {
+      if (e.target === welcomeOverlay) closeWelcome();
+    });
+    welcomeModal.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        closeWelcome();
+      }
+    });
+
+    openWelcome();
+  })();
+
+  // ============================================
   // INIT — call shared utilities
   // ============================================
   App.initDropdowns();
@@ -666,7 +710,8 @@
       return editOverlay.getAttribute('aria-hidden') === 'false'
         || deleteOverlay.getAttribute('aria-hidden') === 'false'
         || drawer.getAttribute('aria-hidden') === 'false'
-        || document.getElementById('wt-overlay').getAttribute('aria-hidden') === 'false';
+        || document.getElementById('wt-overlay').getAttribute('aria-hidden') === 'false'
+        || (welcomeOverlay && welcomeOverlay.getAttribute('aria-hidden') === 'false');
     }
   );
 })();

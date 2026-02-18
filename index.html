@@ -646,6 +646,104 @@
   </div>
 
   <!-- ==========================================
+       WELCOME / INTRO MODAL
+       Shown on first visit to explain the demo
+       intent and WCAG testing best practices.
+       ========================================== -->
+  <div class="modal-overlay" id="welcome-modal-overlay" aria-hidden="true" role="presentation">
+    <div class="modal welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-modal-title" id="welcome-modal">
+      <div class="modal__header">
+        <div class="welcome-modal__header-content">
+          <span class="welcome-modal__badge" aria-hidden="true">WCAG 2.1 AA</span>
+          <h2 class="modal__title" id="welcome-modal-title">Accessibility Demo</h2>
+        </div>
+        <button class="icon-btn" aria-label="Close welcome guide" type="button" id="welcome-modal-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <p class="welcome-modal__intro">This wireframe simulates a WCAG 2.1 AA compliant SaaS app. Every pattern — focus management, ARIA roles, keyboard navigation, screen reader announcements — is intentionally implemented to help product and engineering teams understand and validate real-world accessibility requirements.</p>
+        <div class="welcome-modal__sections">
+
+          <section class="welcome-modal__section" aria-labelledby="wm-kbd-heading">
+            <h3 class="welcome-modal__section-title" id="wm-kbd-heading">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+              Keyboard Navigation
+            </h3>
+            <dl class="welcome-modal__shortcut-list">
+              <div class="welcome-modal__shortcut-row">
+                <dt><kbd class="wm-kbd">Tab</kbd> / <kbd class="wm-kbd">⇧Tab</kbd></dt>
+                <dd>Move focus forward and backward</dd>
+              </div>
+              <div class="welcome-modal__shortcut-row">
+                <dt><kbd class="wm-kbd">Enter</kbd> / <kbd class="wm-kbd">Space</kbd></dt>
+                <dd>Activate buttons, links, and controls</dd>
+              </div>
+              <div class="welcome-modal__shortcut-row">
+                <dt><kbd class="wm-kbd">↑</kbd> <kbd class="wm-kbd">↓</kbd> <kbd class="wm-kbd">←</kbd> <kbd class="wm-kbd">→</kbd></dt>
+                <dd>Navigate menus, tabs, and list items</dd>
+              </div>
+              <div class="welcome-modal__shortcut-row">
+                <dt><kbd class="wm-kbd">Esc</kbd></dt>
+                <dd>Close modals, drawers, and menus</dd>
+              </div>
+              <div class="welcome-modal__shortcut-row">
+                <dt><kbd class="wm-kbd">F6</kbd> / <kbd class="wm-kbd">⇧F6</kbd></dt>
+                <dd>Cycle between page landmarks</dd>
+              </div>
+              <div class="welcome-modal__shortcut-row">
+                <dt><kbd class="wm-kbd">⌘K</kbd></dt>
+                <dd>Focus the search bar</dd>
+              </div>
+              <div class="welcome-modal__shortcut-row">
+                <dt><kbd class="wm-kbd">?</kbd></dt>
+                <dd>Toggle the keyboard shortcuts bar</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="welcome-modal__section" aria-labelledby="wm-sr-heading">
+            <h3 class="welcome-modal__section-title" id="wm-sr-heading">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 18a5 5 0 00-10 0"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/></svg>
+              Screen Reader Testing
+            </h3>
+            <dl class="welcome-modal__shortcut-list">
+              <div class="welcome-modal__shortcut-row">
+                <dt class="welcome-modal__sr-tool">VoiceOver <span class="welcome-modal__sr-platform">(macOS)</span></dt>
+                <dd>Cmd+F5 to toggle · VO+U for landmarks rotor</dd>
+              </div>
+              <div class="welcome-modal__shortcut-row">
+                <dt class="welcome-modal__sr-tool">NVDA <span class="welcome-modal__sr-platform">(Windows)</span></dt>
+                <dd>Ctrl+Alt+N · Insert+F7 for elements list</dd>
+              </div>
+              <div class="welcome-modal__shortcut-row">
+                <dt class="welcome-modal__sr-tool">JAWS <span class="welcome-modal__sr-platform">(Windows)</span></dt>
+                <dd>H for headings · Semicolon for landmarks</dd>
+              </div>
+              <div class="welcome-modal__shortcut-row">
+                <dt class="welcome-modal__sr-tool">axe DevTools</dt>
+                <dd>Browser extension for automated WCAG audits</dd>
+              </div>
+              <div class="welcome-modal__shortcut-row">
+                <dt class="welcome-modal__sr-tool">axe CLI</dt>
+                <dd><code class="welcome-modal__code">npx axe [url] --rules wcag2aa</code></dd>
+              </div>
+            </dl>
+          </section>
+
+        </div>
+        <div class="welcome-modal__tip" role="note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          The <strong>WCAG 2.1 AA</strong> badge in the bottom-right corner lists all implemented criteria and launches the guided accessibility tour.
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primary" type="button" id="welcome-modal-start">Start Exploring</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
        EDIT MODAL — role="dialog", focus trap
        ========================================== -->
   <div class="modal-overlay" id="edit-modal-overlay" aria-hidden="true" role="presentation">
