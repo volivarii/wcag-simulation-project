@@ -667,6 +667,7 @@
     }
 
     function closeWelcome() {
+      localStorage.setItem('wcag-demo-welcome-seen', '1');
       welcomeOverlay.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
       releaseFocus(welcomeModal);
@@ -687,7 +688,18 @@
       }
     });
 
-    openWelcome();
+    var guideBtn = document.getElementById('welcome-guide-btn');
+    if (guideBtn) {
+      guideBtn.addEventListener('click', function() {
+        wcagPanel.setAttribute('aria-hidden', 'true');
+        wcagToggle.setAttribute('aria-expanded', 'false');
+        openWelcome();
+      });
+    }
+
+    if (!localStorage.getItem('wcag-demo-welcome-seen')) {
+      openWelcome();
+    }
   })();
 
   // ============================================
