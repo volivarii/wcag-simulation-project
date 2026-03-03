@@ -1,6 +1,6 @@
-# WCAG 2.1 AA Simulation — SaaS Data Catalog
+# WCAG 2.1 AA Simulation
 
-A fully interactive, single-file simulation demonstrating WCAG 2.1 AA best practices in the context of a SaaS data catalog application.
+A fully interactive simulation demonstrating WCAG 2.1 AA best practices.
 
 ---
 
@@ -19,6 +19,7 @@ npx live-server --port=3000 --open=index.html
 ```
 
 Then open **http://localhost:3000** in your browser.
+Main pages (active nav): Dashboard & Projects
 
 ---
 
@@ -237,9 +238,18 @@ Or use the **axe DevTools** browser extension to audit the page visually.
 
 ```
 wcag-simulation-project/
-├── index.html      ← Single-file simulation (HTML + CSS + JS)
-├── package.json    ← Dev server scripts
-└── README.md       ← This file
+├── index.html          ← Dashboard page
+├── projects.html       ← Projects search page
+├── css/
+│   ├── shared.css      ← Design tokens, reset, layout, header, nav, modals, tooltips, drawer
+│   ├── index.css       ← Dashboard-specific: metrics cards, chart, data lists, walkthrough tour
+│   └── projects.css    ← Projects-specific: filter panel, range slider, toggle, result cards
+├── js/
+│   ├── shared.js       ← window.App utilities: announce, focus trap, dropdowns, tooltips, F6, Cmd+K
+│   ├── index.js        ← Dashboard logic: modals, drawer, form validation, walkthrough tour, chart
+│   └── projects.js     ← Projects logic: filters, sorting, bulk actions, rendering, drawer
+├── package.json        ← Dev server scripts (live-server / http-server)
+└── README.md           ← This file
 ```
 
-No build step required. The simulation is a single self-contained HTML file.
+No build step, no framework, no dependencies.

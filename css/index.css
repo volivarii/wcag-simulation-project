@@ -15,6 +15,7 @@
   grid-row: 2;
   padding: 28px 32px 40px;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   background: var(--color-bg);
 }
 .main-header {

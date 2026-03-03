@@ -209,15 +209,17 @@
 
     tooltipEl.classList.add('tooltip--' + dir);
 
-    // ── 4. Apply pixel-accurate inline position with viewport clamping
+    // ── 4. Apply viewport-absolute position (position:fixed escapes overflow clips)
     if (dir === 'top' || dir === 'bottom') {
       // Ideal centre-aligned left, clamped to viewport
       var idealLeft   = parentRect.left + parentRect.width  / 2 - tipWidth  / 2;
       var clampedLeft = Math.max(margin, Math.min(idealLeft, vw - tipWidth - margin));
 
-      // Convert viewport-absolute left to parent-relative offset
-      tooltipEl.style.left      = (clampedLeft - parentRect.left) + 'px';
-      tooltipEl.style.transform = 'none'; // disable CSS translateX(-50%)
+      tooltipEl.style.left      = clampedLeft + 'px';
+      tooltipEl.style.transform = 'none';
+      tooltipEl.style.top       = dir === 'top'
+        ? (parentRect.top  - tipHeight - gap) + 'px'
+        : (parentRect.bottom + gap) + 'px';
 
       // Arrow: point to trigger centre regardless of clamping
       var arrowX = parentRect.left + parentRect.width / 2 - clampedLeft;
@@ -229,8 +231,11 @@
       var idealTop   = parentRect.top + parentRect.height / 2 - tipHeight / 2;
       var clampedTop = Math.max(margin, Math.min(idealTop, vh - tipHeight - margin));
 
-      tooltipEl.style.top       = (clampedTop - parentRect.top) + 'px';
-      tooltipEl.style.transform = 'none'; // disable CSS translateY(-50%)
+      tooltipEl.style.top       = clampedTop + 'px';
+      tooltipEl.style.transform = 'none';
+      tooltipEl.style.left      = dir === 'left'
+        ? (parentRect.left - tipWidth - gap) + 'px'
+        : (parentRect.right + gap) + 'px';
 
       var arrowY = parentRect.top + parentRect.height / 2 - clampedTop;
       tooltipEl.style.setProperty('--tooltip-arrow-y', arrowY + 'px');
